@@ -1,41 +1,17 @@
 import { zValidator } from '@hono/zod-validator';
 import { Hono } from 'hono';
-import { deleteCookie, setCookie } from 'hono/cookie';
-import { ID } from 'node-appwrite';
+import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
 import { z } from 'zod';
+import { eq } from 'drizzle-orm';
+import bcrypt from 'bcryptjs';
 
 import { AUTH_COOKIE } from '@/features/auth/constants';
 import { signInFormSchema, signUpFormSchema } from '@/features/auth/schema';
-import { createAdminClient } from '@/lib/appwrite';
 import { sessionMiddleware } from '@/lib/session-middleware';
+import { db } from '@/db';
+import { users, sessions } from '@/db/schema';
 
 const app = new Hono()
-  .get(
-    '/',
-    zValidator(
-      'query',
-      z.object({
-        userId: z.string().trim().min(1),
-        secret: z.string().trim().min(1),
-      }),
-    ),
-    async (ctx) => {
-      const { userId, secret } = ctx.req.valid('query');
-
-      const { account } = await createAdminClient();
-      const session = await account.createSession(userId, secret);
-
-      setCookie(ctx, AUTH_COOKIE, session.secret, {
-        path: '/',
-        httpOnly: true,
-        secure: true,
-        sameSite: 'strict',
-        maxAge: 60 * 60 * 24 * 30,
-      });
-
-      return ctx.redirect(process.env.NEXT_PUBLIC_APP_BASE_URL);
-    },
-  )
   .get('/current', sessionMiddleware, (ctx) => {
     const user = ctx.get('user');
 
@@ -44,11 +20,28 @@ const app = new Hono()
   .post('/login', zValidator('json', signInFormSchema), async (ctx) => {
     const { email, password } = ctx.req.valid('json');
 
-    const { account } = await createAdminClient();
+    const [user] = await db.select().from(users).where(eq(users.email, email));
 
-    const session = await account.createEmailPasswordSession(email, password);
+    if (!user) {
+      return ctx.json({ error: 'Invalid credentials.' }, 401);
+    }
 
-    setCookie(ctx, AUTH_COOKIE, session.secret, {
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return ctx.json({ error: 'Invalid credentials.' }, 401);
+    }
+
+    const sessionId = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30); // 30 days
+
+    await db.insert(sessions).values({
+      id: sessionId,
+      userId: user.id,
+      expiresAt,
+    });
+
+    setCookie(ctx, AUTH_COOKIE, sessionId, {
       path: '/',
       httpOnly: true,
       secure: true,
@@ -61,13 +54,32 @@ const app = new Hono()
   .post('/register', zValidator('json', signUpFormSchema), async (ctx) => {
     const { name, email, password } = ctx.req.valid('json');
 
-    const { account } = await createAdminClient();
+    const [existingUser] = await db.select().from(users).where(eq(users.email, email));
 
-    await account.create(ID.unique(), email, password, name);
+    if (existingUser) {
+      return ctx.json({ error: 'User already exists.' }, 400);
+    }
 
-    const session = await account.createEmailPasswordSession(email, password);
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const userId = crypto.randomUUID();
 
-    setCookie(ctx, AUTH_COOKIE, session.secret, {
+    await db.insert(users).values({
+      id: userId,
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    const sessionId = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30); // 30 days
+
+    await db.insert(sessions).values({
+      id: sessionId,
+      userId,
+      expiresAt,
+    });
+
+    setCookie(ctx, AUTH_COOKIE, sessionId, {
       path: '/',
       httpOnly: true,
       secure: true,
@@ -78,10 +90,13 @@ const app = new Hono()
     return ctx.json({ success: true });
   })
   .post('/logout', sessionMiddleware, async (ctx) => {
-    const account = ctx.get('account');
+    const sessionId = getCookie(ctx, AUTH_COOKIE);
+
+    if (sessionId) {
+      await db.delete(sessions).where(eq(sessions.id, sessionId));
+    }
 
     deleteCookie(ctx, AUTH_COOKIE);
-    await account.deleteSession('current');
 
     return ctx.json({ success: true });
   });

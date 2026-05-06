@@ -1,45 +1,53 @@
-'use server';
+import { cookies } from 'next/headers';
+import { desc, eq, inArray } from 'drizzle-orm';
 
-import { type Models, Query } from 'node-appwrite';
-
-import { DATABASE_ID, IMAGES_BUCKET_ID, MEMBERS_ID, WORKSPACES_ID } from '@/config/db';
-import { createSessionClient } from '@/lib/appwrite';
+import { AUTH_COOKIE } from '@/features/auth/constants';
+import { db } from '@/db';
+import { members, sessions, users, workspaces } from '@/db/schema';
 
 export const getWorkspaces = async () => {
   try {
-    const { account, databases, storage } = await createSessionClient();
+    const sessionToken = cookies().get(AUTH_COOKIE);
+    if (!sessionToken?.value) return { documents: [], total: 0 };
 
-    const user = await account.get();
-    const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [Query.equal('userId', user.$id)]);
+    const [sessionWithUser] = await db
+      .select({
+        user: users,
+        session: sessions,
+      })
+      .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(eq(sessions.id, sessionToken.value));
 
-    if (members.total === 0) return { documents: [], total: 0 };
+    if (!sessionWithUser || sessionWithUser.session.expiresAt < new Date()) {
+      return { documents: [], total: 0 };
+    }
 
-    const workspaceIds = members.documents.map((member) => member.workspaceId);
+    const user = sessionWithUser.user;
 
-    const workspaces = await databases.listDocuments(DATABASE_ID, WORKSPACES_ID, [
-      Query.contains('$id', workspaceIds),
-      Query.orderDesc('$createdAt'),
-    ]);
+    const userMembers = await db.select().from(members).where(eq(members.userId, user.id));
 
-    const workspacesWithImages: Models.Document[] = await Promise.all(
-      workspaces.documents.map(async (workspace) => {
-        let imageUrl: string | undefined = undefined;
+    if (userMembers.length === 0) return { documents: [], total: 0 };
 
-        if (workspace.imageId) {
-          const arrayBuffer = await storage.getFileView(IMAGES_BUCKET_ID, workspace.imageId);
-          imageUrl = `data:image/png;base64,${Buffer.from(arrayBuffer).toString('base64')}`;
-        }
+    const workspaceIds = userMembers.map((member) => member.workspaceId);
 
-        return {
-          ...workspace,
-          imageUrl,
-        };
-      }),
-    );
+    const userWorkspaces = await db
+      .select()
+      .from(workspaces)
+      .where(inArray(workspaces.id, workspaceIds))
+      .orderBy(desc(workspaces.createdAt));
+
+    const documents = userWorkspaces.map((workspace) => ({
+      ...workspace,
+      $id: workspace.id,
+      $createdAt: workspace.createdAt,
+      $updatedAt: workspace.updatedAt,
+      imageUrl: workspace.imageId,
+    }));
 
     return {
-      documents: workspacesWithImages,
-      total: workspaces.total,
+      documents,
+      total: documents.length,
     };
   } catch {
     return { documents: [], total: 0 };

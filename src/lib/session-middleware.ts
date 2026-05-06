@@ -1,51 +1,39 @@
 import { getCookie } from 'hono/cookie';
 import { createMiddleware } from 'hono/factory';
-import {
-  Account,
-  type Account as AccountType,
-  Client,
-  Databases,
-  type Databases as DatabasesType,
-  type Models,
-  Storage,
-  Storage as StorageType,
-  type Users as UsersType,
-} from 'node-appwrite';
+import { eq } from 'drizzle-orm';
 import 'server-only';
 
 import { AUTH_COOKIE } from '@/features/auth/constants';
+import { db } from '@/db';
+import { users, sessions } from '@/db/schema';
 
 type AdditionalContext = {
   Variables: {
-    account: AccountType;
-    databases: DatabasesType;
-    storage: StorageType;
-    users: UsersType;
-    user: Models.User<Models.Preferences>;
+    user: typeof users.$inferSelect;
   };
 };
 
 export const sessionMiddleware = createMiddleware<AdditionalContext>(async (ctx, next) => {
-  const client = new Client().setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!).setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+  const sessionId = getCookie(ctx, AUTH_COOKIE);
 
-  const session = getCookie(ctx, AUTH_COOKIE);
-
-  if (!session) {
+  if (!sessionId) {
     return ctx.json({ error: 'Unauthorized.' }, 401);
   }
 
-  client.setSession(session);
+  const [sessionWithUser] = await db
+    .select({
+      user: users,
+      session: sessions,
+    })
+    .from(sessions)
+    .innerJoin(users, eq(sessions.userId, users.id))
+    .where(eq(sessions.id, sessionId));
 
-  const account = new Account(client);
-  const databases = new Databases(client);
-  const storage = new Storage(client);
+  if (!sessionWithUser || sessionWithUser.session.expiresAt < new Date()) {
+    return ctx.json({ error: 'Unauthorized.' }, 401);
+  }
 
-  const user = await account.get();
-
-  ctx.set('account', account);
-  ctx.set('databases', databases);
-  ctx.set('storage', storage);
-  ctx.set('user', user);
+  ctx.set('user', sessionWithUser.user);
 
   await next();
 });
