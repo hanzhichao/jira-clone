@@ -8,6 +8,7 @@ import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useI18n } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 interface DatePickerProps {
@@ -24,9 +25,11 @@ export const DatePicker = ({
   onChange,
   disabled = false,
   className,
-  placeholder = 'Select date',
+  placeholder,
   showReset = false,
 }: DatePickerProps) => {
+  const { t } = useI18n();
+  const defaultPlaceholder = t('common.selectDate');
   return (
     <Popover>
       <PopoverTrigger disabled={disabled} asChild>
@@ -37,7 +40,7 @@ export const DatePicker = ({
           className={cn('w-full justify-start px-3 text-left font-normal', !value && 'text-muted-foreground', className)}
         >
           <CalendarIcon className="mr-2 size-4" />
-          {value ? format(value, 'PPP') : <span>{placeholder}</span>}
+          {value ? format(value, 'PPP') : <span>{placeholder || defaultPlaceholder}</span>}
         </Button>
       </PopoverTrigger>
 
@@ -48,7 +51,7 @@ export const DatePicker = ({
           <PopoverClose asChild>
             <Button onClick={() => onChange(null)} variant="secondary" size="sm" className="w-full">
               <OctagonMinus className="size-4" />
-              Reset Filter
+              {t('filter.resetFilter')}
             </Button>
           </PopoverClose>
         )}

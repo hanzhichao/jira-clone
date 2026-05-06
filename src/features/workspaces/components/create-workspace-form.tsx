@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useI18n } from '@/i18n';
 import { useCreateWorkspace } from '@/features/workspaces/api/use-create-workspace';
 import { createWorkspaceSchema } from '@/features/workspaces/schema';
 import { cn } from '@/lib/utils';
@@ -24,6 +25,7 @@ interface CreateWorkspaceFormProps {
 }
 
 export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
+  const { t } = useI18n();
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -64,8 +66,8 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
     if (file) {
       const validImageTypes = ['image/png', 'image/jpg', 'image/jpeg'];
 
-      if (!validImageTypes.includes(file.type)) return toast.error('File is not a valid image.');
-      if (file.size > MAX_FILE_SIZE) return toast.error('Image size cannot exceed 1 MB.');
+      if (!validImageTypes.includes(file.type)) return toast.error(t('common.invalidImageFile'));
+      if (file.size > MAX_FILE_SIZE) return toast.error(t('common.imageSizeExceeds'));
 
       createWorkspaceForm.setValue('image', file);
     }
@@ -74,7 +76,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
   return (
     <Card className="size-full border-none shadow-none">
       <CardHeader className="flex p-7">
-        <CardTitle className="text-xl font-bold">Create a new workspace</CardTitle>
+        <CardTitle className="text-xl font-bold">{t('workspace.createWorkspace')}</CardTitle>
       </CardHeader>
 
       <div className="px-7">
@@ -91,10 +93,10 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Workspace Name</FormLabel>
+                    <FormLabel>{t('workspace.workspaceName')}</FormLabel>
 
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Enter workspace name" />
+                      <Input {...field} type="text" placeholder={t('workspace.workspaceName')} />
                     </FormControl>
 
                     <FormMessage />
@@ -127,8 +129,8 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                       )}
 
                       <div className="flex flex-col">
-                        <p className="text-sm">Workspace Icon</p>
-                        <p className="text-xs text-muted-foreground">JPG, PNG, or JPEG, max 1MB</p>
+                        <p className="text-sm">{t('common.workspaceIcon')}</p>
+                        <p className="text-xs text-muted-foreground">{t('common.imageHint')}</p>
 
                         <input
                           type="file"
@@ -152,7 +154,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                               if (inputRef.current) inputRef.current.value = '';
                             }}
                           >
-                            Remove Image
+                            {t('common.removeImage')}
                           </Button>
                         ) : (
                           <Button
@@ -163,7 +165,7 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                             className="mt-2 w-fit"
                             onClick={() => inputRef.current?.click()}
                           >
-                            Upload Image
+                            {t('common.uploadImage')}
                           </Button>
                         )}
                       </div>
@@ -184,11 +186,11 @@ export const CreateWorkspaceForm = ({ onCancel }: CreateWorkspaceFormProps) => {
                 onClick={onCancel}
                 className={cn(!onCancel && 'invisible')}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
 
               <Button disabled={isPending} type="submit" size="lg">
-                Create workspace
+                {t('workspace.createWorkspace')}
               </Button>
             </div>
           </form>

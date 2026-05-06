@@ -2,10 +2,12 @@ import { SearchIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { Input } from '@/components/ui/input';
+import { useI18n } from '@/i18n';
 import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
 import { useDebounce } from '@/hooks/use-debounce';
 
 export const DataSearch = () => {
+  const { t } = useI18n();
   const [value, setValue] = useState('');
 
   const debouncedValue = useDebounce(value);
@@ -24,7 +26,7 @@ export const DataSearch = () => {
         type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Search for a task"
+        placeholder={t('task.searchPlaceholder')}
         className="h-8 w-full px-8 lg:w-[320px]"
       />
     </div>

@@ -5,6 +5,7 @@ import { ArrowUpDown, MoreVertical } from 'lucide-react';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/i18n';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import type { Task } from '@/features/tasks/types';
@@ -13,13 +14,15 @@ import { snakeCaseToTitleCase } from '@/lib/utils';
 import { TaskActions } from './task-actions';
 import { TaskDate } from './task-date';
 
-export const columns: ColumnDef<Task>[] = [
+type TranslationFunction = (key: string) => string;
+
+export const getColumns = (t: TranslationFunction): ColumnDef<Task>[] => [
   {
     accessorKey: 'name',
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Task Name
+          {t('task.taskName')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -35,7 +38,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Project
+          {t('task.project')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -57,7 +60,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Assignee
+          {t('task.assignee')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -79,7 +82,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Due Date
+          {t('task.dueDate')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -95,7 +98,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Status
+          {t('task.status')}
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );

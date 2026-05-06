@@ -10,6 +10,7 @@ import { PageError } from '@/components/page-error';
 import { PageLoader } from '@/components/page-loader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useI18n } from '@/i18n';
 import { useGetMembers } from '@/features/members/api/use-get-members';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import type { Member } from '@/features/members/types';
@@ -24,6 +25,7 @@ import { useGetWorkspaceAnalytics } from '@/features/workspaces/api/use-get-work
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 
 export const WorkspaceIdClient = () => {
+  const { t } = useI18n();
   const workspaceId = useWorkspaceId();
 
   const { data: workspaceAnalytics, isLoading: isLoadingAnalytics } = useGetWorkspaceAnalytics({ workspaceId });
@@ -55,6 +57,7 @@ interface TaskListProps {
 }
 
 export const TaskList = ({ data, total }: TaskListProps) => {
+  const { t } = useI18n();
   const workspaceId = useWorkspaceId();
   const { open: createTask } = useCreateTaskModal();
 
@@ -62,9 +65,9 @@ export const TaskList = ({ data, total }: TaskListProps) => {
     <div className="col-span-1 flex flex-col gap-y-4">
       <div className="rounded-lg bg-muted p-4">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">Tasks ({total})</p>
+          <p className="text-lg font-semibold">{t('task.tasks')} ({total})</p>
 
-          <Button title="Create Task" variant="muted" size="icon" onClick={() => createTask()}>
+          <Button title={t('task.createTask')} variant="muted" size="icon" onClick={() => createTask()}>
             <PlusIcon className="size-4 text-neutral-400" />
           </Button>
         </div>
@@ -95,11 +98,11 @@ export const TaskList = ({ data, total }: TaskListProps) => {
             </li>
           ))}
 
-          <li className="hidden text-center text-sm text-muted-foreground first-of-type:block">No tasks found.</li>
+          <li className="hidden text-center text-sm text-muted-foreground first-of-type:block">{t('common.noResults')}</li>
         </ul>
 
         <Button variant="muted" className="mt-4 w-full" asChild>
-          <Link href={`/workspaces/${workspaceId}/tasks`}>Show All</Link>
+          <Link href={`/workspaces/${workspaceId}/tasks`}>{t('common.showAll')}</Link>
         </Button>
       </div>
     </div>
@@ -112,6 +115,7 @@ interface ProjectListProps {
 }
 
 export const ProjectList = ({ data, total }: ProjectListProps) => {
+  const { t } = useI18n();
   const workspaceId = useWorkspaceId();
   const { open: createProject } = useCreateProjectModal();
 
@@ -119,9 +123,9 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
     <div className="col-span-1 flex flex-col gap-y-4">
       <div className="rounded-lg border bg-white p-4">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">Projects ({total})</p>
+          <p className="text-lg font-semibold">{t('project.projects')} ({total})</p>
 
-          <Button title="Create Project" variant="secondary" size="icon" onClick={createProject}>
+          <Button title={t('project.createProject')} variant="secondary" size="icon" onClick={createProject}>
             <PlusIcon className="size-4 text-neutral-400" />
           </Button>
         </div>
@@ -142,7 +146,7 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
             </li>
           ))}
 
-          <li className="hidden text-center text-sm text-muted-foreground first-of-type:block">No projects found.</li>
+          <li className="hidden text-center text-sm text-muted-foreground first-of-type:block">{t('common.noResults')}</li>
         </ul>
       </div>
     </div>
@@ -155,15 +159,16 @@ interface MemberListProps {
 }
 
 export const MemberList = ({ data, total }: MemberListProps) => {
+  const { t } = useI18n();
   const workspaceId = useWorkspaceId();
 
   return (
     <div className="col-span-1 flex flex-col gap-y-4">
       <div className="rounded-lg border bg-white p-4">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">Members ({total})</p>
+          <p className="text-lg font-semibold">{t('member.members')} ({total})</p>
 
-          <Button title="Create Project" variant="secondary" size="icon" asChild>
+          <Button title={t('member.members')} variant="secondary" size="icon" asChild>
             <Link href={`/workspaces/${workspaceId}/members`}>
               <SettingsIcon className="size-4 text-neutral-400" />
             </Link>
@@ -188,7 +193,7 @@ export const MemberList = ({ data, total }: MemberListProps) => {
             </li>
           ))}
 
-          <li className="hidden text-center text-sm text-muted-foreground first-of-type:block">No members found.</li>
+          <li className="hidden text-center text-sm text-muted-foreground first-of-type:block">{t('common.noResults')}</li>
         </ul>
       </div>
     </div>

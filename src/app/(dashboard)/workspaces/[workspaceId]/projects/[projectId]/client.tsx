@@ -7,6 +7,7 @@ import { Analytics } from '@/components/analytics';
 import { PageError } from '@/components/page-error';
 import { PageLoader } from '@/components/page-loader';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/i18n';
 import { useGetProject } from '@/features/projects/api/use-get-project';
 import { useGetProjectAnalytics } from '@/features/projects/api/use-get-project-analytics';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
@@ -14,6 +15,7 @@ import { useProjectId } from '@/features/projects/hooks/use-project-id';
 import { TaskViewSwitcher } from '@/features/tasks/components/task-view-switcher';
 
 export const ProjectIdClient = () => {
+  const { t } = useI18n();
   const projectId = useProjectId();
 
   const { data: project, isLoading: isLoadingProject } = useGetProject({ projectId });
@@ -38,7 +40,7 @@ export const ProjectIdClient = () => {
           <Button variant="secondary" size="sm" asChild>
             <Link href={`/workspaces/${project.workspaceId}/projects/${project.$id}/settings`}>
               <Pencil className="mr-2 size-4" />
-              Edit Project
+              {t('project.editProject')}
             </Link>
           </Button>
         </div>

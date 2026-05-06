@@ -15,11 +15,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useI18n } from '@/i18n';
 import { useRegister } from '@/features/auth/api/use-register';
 import { signUpFormSchema } from '@/features/auth/schema';
 import { onOAuth } from '@/lib/oauth';
 
 export const SignUpCard = () => {
+  const { t } = useI18n();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const { mutate: register, isPending: isRegistering } = useRegister();
   const signUpForm = useForm<z.infer<typeof signUpFormSchema>>({
@@ -53,7 +55,7 @@ export const SignUpCard = () => {
     onOAuth(provider)
       .catch((error) => {
         console.error(error);
-        toast.error('Something went wrong.');
+        toast.error(t('common.somethingWentWrong'));
       })
       .finally(() => setIsRedirecting(false));
   };
@@ -63,15 +65,11 @@ export const SignUpCard = () => {
   return (
     <Card className="size-full border-none shadow-none md:w-[487px]">
       <CardHeader className="flex items-center justify-center p-7 text-center">
-        <CardTitle className="text-2xl">Create an account</CardTitle>
+        <CardTitle className="text-2xl">{t('auth.signUp')}</CardTitle>
         <CardDescription>
-          By signing up, you agree to{' '}
+          {t('auth.noAccount')}{' '}
           <Link href="#">
-            <span className="text-blue-700">Privacy Policy</span>
-          </Link>{' '}
-          and{' '}
-          <Link href="#">
-            <span className="text-blue-700">Terms of Service</span>
+            <span className="text-blue-700">{t('auth.hasAccount')}</span>
           </Link>
         </CardDescription>
       </CardHeader>
@@ -90,7 +88,7 @@ export const SignUpCard = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} type="text" placeholder="Full name" />
+                    <Input {...field} type="text" placeholder={t('auth.name')} />
                   </FormControl>
 
                   <FormMessage />
@@ -105,7 +103,7 @@ export const SignUpCard = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} type="email" placeholder="Email address" />
+                    <Input {...field} type="email" placeholder={t('auth.email')} />
                   </FormControl>
 
                   <FormMessage />
@@ -120,7 +118,7 @@ export const SignUpCard = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input {...field} type="password" placeholder="Password" />
+                    <Input {...field} type="password" placeholder={t('auth.password')} />
                   </FormControl>
 
                   <FormMessage />
@@ -129,7 +127,7 @@ export const SignUpCard = () => {
             />
 
             <Button type="submit" disabled={isPending} size="lg" className="w-full">
-              Register
+              {t('auth.signUp')}
             </Button>
           </form>
         </Form>
@@ -141,11 +139,11 @@ export const SignUpCard = () => {
 
       <CardContent className="flex flex-col gap-y-4 p-7">
         <Button onClick={() => handleOAuth(OAuthProvider.Google)} disabled={isPending} variant="secondary" size="lg" className="w-full">
-          <FcGoogle className="mr-2 size-5" /> Continue with Google
+          <FcGoogle className="mr-2 size-5" /> {t('auth.continueWithGoogle')}
         </Button>
 
         <Button onClick={() => handleOAuth(OAuthProvider.Github)} disabled={isPending} variant="secondary" size="lg" className="w-full">
-          <FaGithub className="mr-2 size-5" /> Continue with GitHub
+          <FaGithub className="mr-2 size-5" /> {t('auth.continueWithGithub')}
         </Button>
       </CardContent>
 
@@ -155,9 +153,9 @@ export const SignUpCard = () => {
 
       <CardContent className="flex items-center justify-center p-7">
         <p>
-          Already have an account?{' '}
+          {t('auth.hasAccount')}{' '}
           <Link href="/sign-in">
-            <span className="text-blue-700">Login</span>
+            <span className="text-blue-700">{t('auth.signInLink')}</span>
           </Link>
         </p>
       </CardContent>

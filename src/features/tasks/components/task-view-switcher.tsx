@@ -7,6 +7,7 @@ import { useCallback } from 'react';
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useI18n } from '@/i18n';
 import { useBulkUpdateTasks } from '@/features/tasks/api/use-bulk-update-tasks';
 import { useGetTasks } from '@/features/tasks/api/use-get-tasks';
 import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
@@ -14,7 +15,7 @@ import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
 import type { TaskStatus } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 
-import { columns } from './columns';
+import { getColumns } from './columns';
 import { DataCalendar } from './data-calendar';
 import { DataFilters } from './data-filters';
 import { DataKanban } from './data-kanban';
@@ -27,6 +28,7 @@ interface TaskViewSwitcherProps {
 }
 
 export const TaskViewSwitcher = ({ projectId, hideProjectFilter }: TaskViewSwitcherProps) => {
+  const { t } = useI18n();
   const [view, setView] = useQueryState('task-view', {
     defaultValue: 'table',
   });
@@ -61,21 +63,21 @@ export const TaskViewSwitcher = ({ projectId, hideProjectFilter }: TaskViewSwitc
         <div className="flex flex-col items-center justify-between gap-y-2 lg:flex-row">
           <TabsList className="w-full lg:w-auto">
             <TabsTrigger className="h-8 w-full lg:w-auto" value="table">
-              Table
+              {t('view.list')}
             </TabsTrigger>
 
             <TabsTrigger className="h-8 w-full lg:w-auto" value="kanban">
-              Kanban
+              {t('view.board')}
             </TabsTrigger>
 
             <TabsTrigger className="h-8 w-full lg:w-auto" value="calendar">
-              Calendar
+              {t('view.calendar')}
             </TabsTrigger>
           </TabsList>
 
           <Button onClick={() => open()} size="sm" className="w-full lg:w-auto">
             <PlusIcon className="size-4" />
-            New
+            {t('task.createTask')}
           </Button>
         </div>
         <DottedSeparator className="my-4" />
@@ -94,7 +96,7 @@ export const TaskViewSwitcher = ({ projectId, hideProjectFilter }: TaskViewSwitc
         ) : (
           <>
             <TabsContent value="table" className="mt-0">
-              <DataTable columns={columns} data={tasks?.documents ?? []} />
+              <DataTable columns={getColumns(t)} data={tasks?.documents ?? []} />
             </TabsContent>
 
             <TabsContent value="kanban" className="mt-0">

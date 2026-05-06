@@ -5,10 +5,11 @@ import { usePathname } from 'next/navigation';
 import type { PropsWithChildren } from 'react';
 
 import { Logo } from '@/components/logo';
-import { SourceCode } from '@/components/source-code';
 import { Button } from '@/components/ui/button';
+import { useI18n } from '@/i18n';
 
 const AuthLayout = ({ children }: PropsWithChildren) => {
+  const { t } = useI18n();
   const pathname = usePathname();
   const isSignIn = pathname === '/sign-in';
 
@@ -20,10 +21,8 @@ const AuthLayout = ({ children }: PropsWithChildren) => {
 
           <div className="flex items-center gap-x-2.5">
             <Button variant="secondary" asChild>
-              <Link href={isSignIn ? '/sign-up' : 'sign-in'}>{isSignIn ? 'Register' : 'Login'}</Link>
+              <Link href={isSignIn ? '/sign-up' : 'sign-in'}>{isSignIn ? t('auth.register') : t('auth.login')}</Link>
             </Button>
-
-            <SourceCode />
           </div>
         </nav>
 

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
+import { useI18n } from '@/i18n';
 import { useDeleteMember } from '@/features/members/api/use-delete-member';
 import { useGetMembers } from '@/features/members/api/use-get-members';
 import { useUpdateMember } from '@/features/members/api/use-update-member';
@@ -18,8 +19,9 @@ import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { useConfirm } from '@/hooks/use-confirm';
 
 export const MembersList = () => {
+  const { t } = useI18n();
   const workspaceId = useWorkspaceId();
-  const [ConfirmDialog, confirm] = useConfirm('Remove member', 'This member will be removed from this workspace.', 'destructive');
+  const [ConfirmDialog, confirm] = useConfirm(t('member.removeMember'), t('member.removeMemberHint'), 'destructive');
 
   const { data: members } = useGetMembers({ workspaceId });
   const { mutate: deleteMember, isPending: isDeletingMember } = useDeleteMember();
@@ -57,11 +59,11 @@ export const MembersList = () => {
         <Button variant="secondary" size="sm" asChild>
           <Link href={`/workspaces/${workspaceId}`}>
             <ArrowLeft className="mr-2 size-4" />
-            Back
+            {t('common.back')}
           </Link>
         </Button>
 
-        <CardTitle className="text-xl font-bold">Members list</CardTitle>
+        <CardTitle className="text-xl font-bold">{t('member.members')}</CardTitle>
       </CardHeader>
 
       <div className="px-7">
@@ -92,7 +94,7 @@ export const MembersList = () => {
                     onClick={() => handleUpdateMember(member.$id, MemberRole.ADMIN)}
                     disabled={isPending}
                   >
-                    Set as Administrator
+                    {t('member.setAsAdmin')}
                   </DropdownMenuItem>
 
                   <DropdownMenuItem
@@ -100,7 +102,7 @@ export const MembersList = () => {
                     onClick={() => handleUpdateMember(member.$id, MemberRole.MEMBER)}
                     disabled={isPending}
                   >
-                    Set as Member
+                    {t('member.setAsMember')}
                   </DropdownMenuItem>
 
                   <DropdownMenuItem
@@ -108,7 +110,7 @@ export const MembersList = () => {
                     onClick={() => handleDeleteMember(member.$id)}
                     disabled={isPending}
                   >
-                    Remove {member.name}
+                    {t('member.remove')} {member.name}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

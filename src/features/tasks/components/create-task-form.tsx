@@ -12,6 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useI18n } from '@/i18n';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { useCreateTask } from '@/features/tasks/api/use-create-task';
@@ -28,6 +29,7 @@ interface CreateTaskFormProps {
 }
 
 export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, projectOptions }: CreateTaskFormProps) => {
+  const { t } = useI18n();
   const router = useRouter();
   const workspaceId = useWorkspaceId();
 
@@ -63,7 +65,7 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
   return (
     <Card className="size-full border-none shadow-none">
       <CardHeader className="flex p-7">
-        <CardTitle className="text-xl font-bold">Create a new task</CardTitle>
+        <CardTitle className="text-xl font-bold">{t('task.createTask')}</CardTitle>
       </CardHeader>
 
       <div className="px-7">
@@ -80,10 +82,10 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Task Name</FormLabel>
+                    <FormLabel>{t('task.taskName')}</FormLabel>
 
                     <FormControl>
-                      <Input {...field} type="text" placeholder="Enter task name" />
+                      <Input {...field} type="text" placeholder={t('task.taskName')} />
                     </FormControl>
 
                     <FormMessage />
@@ -97,10 +99,10 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 name="dueDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Due Date</FormLabel>
+                    <FormLabel>{t('task.dueDate')}</FormLabel>
 
                     <FormControl>
-                      <DatePicker {...field} disabled={isPending} placeholder="Select due date" />
+                      <DatePicker {...field} disabled={isPending} placeholder={t('task.dueDate')} />
                     </FormControl>
 
                     <FormMessage />
@@ -114,11 +116,11 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 name="assigneeId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Assignee</FormLabel>
+                    <FormLabel>{t('task.assignee')}</FormLabel>
 
                     <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>{field.value ? <SelectValue placeholder="Select assignee" /> : 'Select assignee'}</SelectTrigger>
+                        <SelectTrigger>{field.value ? <SelectValue placeholder={t('task.assignee')} /> : t('task.assignee')}</SelectTrigger>
                       </FormControl>
 
                       <FormMessage />
@@ -144,21 +146,21 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>{t('task.status')}</FormLabel>
 
                     <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>{field.value ? <SelectValue placeholder="Select status" /> : 'Select status'}</SelectTrigger>
+                        <SelectTrigger>{field.value ? <SelectValue placeholder={t('task.status')} /> : t('task.status')}</SelectTrigger>
                       </FormControl>
 
                       <FormMessage />
 
                       <SelectContent>
-                        <SelectItem value={TaskStatus.BACKLOG}>Backlog</SelectItem>
-                        <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
-                        <SelectItem value={TaskStatus.IN_REVIEW}>In Review</SelectItem>
-                        <SelectItem value={TaskStatus.TODO}>Todo</SelectItem>
-                        <SelectItem value={TaskStatus.DONE}>Done</SelectItem>
+                        <SelectItem value={TaskStatus.BACKLOG}>{t('task.backlog')}</SelectItem>
+                        <SelectItem value={TaskStatus.IN_PROGRESS}>{t('task.inProgress')}</SelectItem>
+                        <SelectItem value={TaskStatus.IN_REVIEW}>{t('task.inReview')}</SelectItem>
+                        <SelectItem value={TaskStatus.TODO}>{t('task.todo')}</SelectItem>
+                        <SelectItem value={TaskStatus.DONE}>{t('task.done')}</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>
@@ -171,11 +173,11 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 name="projectId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Project</FormLabel>
+                    <FormLabel>{t('project.projectName')}</FormLabel>
 
                     <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>{field.value ? <SelectValue placeholder="Select project" /> : 'Select project'}</SelectTrigger>
+                        <SelectTrigger>{field.value ? <SelectValue placeholder={t('project.projectName')} /> : t('project.projectName')}</SelectTrigger>
                       </FormControl>
 
                       <FormMessage />
@@ -209,11 +211,11 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 onClick={onCancel}
                 className={cn(!onCancel && 'invisible')}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
 
               <Button disabled={isPending} type="submit" size="lg">
-                Create Task
+                {t('task.createTask')}
               </Button>
             </div>
           </form>

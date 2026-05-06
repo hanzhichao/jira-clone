@@ -1,6 +1,9 @@
+'use client';
+
 import { Suspense } from 'react';
 
 import { DottedSeparator } from './dotted-separator';
+import { LanguageSwitcher } from './language-switcher';
 import { Logo } from './logo';
 import { Navigation } from './navigation';
 import { Projects } from './projects';
@@ -9,7 +12,10 @@ import { WorkspaceSwitcher } from './workspaces-switcher';
 export const Sidebar = () => {
   return (
     <aside className="size-full bg-neutral-100 p-4">
-      <Logo />
+      <div className="flex items-center justify-between">
+        <Logo />
+        <LanguageSwitcher />
+      </div>
 
       <DottedSeparator className="my-4" />
 

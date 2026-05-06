@@ -5,30 +5,31 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { GoCheckCircle, GoCheckCircleFill, GoHome, GoHomeFill } from 'react-icons/go';
 
+import { useI18n } from '@/i18n';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { cn } from '@/lib/utils';
 
-const routes = [
+const getRoutes = (t: (key: string) => string) => [
   {
-    label: 'Home',
+    label: t('navigation.home'),
     href: '',
     icon: GoHome,
     activeIcon: GoHomeFill,
   },
   {
-    label: 'My Tasks',
+    label: t('navigation.myTasks'),
     href: '/tasks',
     icon: GoCheckCircle,
     activeIcon: GoCheckCircleFill,
   },
   {
-    label: 'Settings',
+    label: t('navigation.settings'),
     href: '/settings',
     icon: Settings,
     activeIcon: Settings,
   },
   {
-    label: 'Members',
+    label: t('navigation.members'),
     href: '/members',
     icon: UsersIcon,
     activeIcon: UsersIcon,
@@ -38,6 +39,8 @@ const routes = [
 export const Navigation = () => {
   const pathname = usePathname();
   const workspaceId = useWorkspaceId();
+  const { t } = useI18n();
+  const routes = getRoutes(t);
 
   return (
     <ul className="flex flex-col">

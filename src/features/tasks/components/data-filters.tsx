@@ -1,7 +1,10 @@
+'use client';
+
 import { Folder, ListChecks, UserIcon } from 'lucide-react';
 
 import { DatePicker } from '@/components/date-picker';
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useI18n } from '@/i18n';
 import { useGetMembers } from '@/features/members/api/use-get-members';
 import { useGetProjects } from '@/features/projects/api/use-get-projects';
 import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
@@ -13,6 +16,7 @@ interface DataFiltersProps {
 }
 
 export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
+  const { t } = useI18n();
   const workspaceId = useWorkspaceId();
 
   const { data: projects, isLoading: isLoadingProjects } = useGetProjects({ workspaceId });
@@ -52,19 +56,19 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
         <SelectTrigger className="h-8 w-full lg:w-auto">
           <div className="flex items-center pr-2">
             <ListChecks className="mr-2 size-4" />
-            <SelectValue placeholder="All statuses" />
+            <SelectValue placeholder={t('filter.all')} />
           </div>
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All statuses</SelectItem>
+          <SelectItem value="all">{t('filter.all')}</SelectItem>
           <SelectSeparator />
 
-          <SelectItem value={TaskStatus.BACKLOG}>Backlog</SelectItem>
-          <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
-          <SelectItem value={TaskStatus.IN_REVIEW}>In Review</SelectItem>
-          <SelectItem value={TaskStatus.TODO}>Todo</SelectItem>
-          <SelectItem value={TaskStatus.DONE}>Done</SelectItem>
+          <SelectItem value={TaskStatus.BACKLOG}>{t('task.backlog')}</SelectItem>
+          <SelectItem value={TaskStatus.IN_PROGRESS}>{t('task.inProgress')}</SelectItem>
+          <SelectItem value={TaskStatus.IN_REVIEW}>{t('task.inReview')}</SelectItem>
+          <SelectItem value={TaskStatus.TODO}>{t('task.todo')}</SelectItem>
+          <SelectItem value={TaskStatus.DONE}>{t('task.done')}</SelectItem>
         </SelectContent>
       </Select>
 
@@ -72,12 +76,12 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
         <SelectTrigger className="h-8 w-full lg:w-auto">
           <div className="flex items-center pr-2">
             <UserIcon className="mr-2 size-4" />
-            <SelectValue placeholder="All assignees" />
+            <SelectValue placeholder={t('filter.all')} />
           </div>
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All assignees</SelectItem>
+          <SelectItem value="all">{t('filter.all')}</SelectItem>
           <SelectSeparator />
 
           {memberOptions?.map((member) => (
@@ -93,12 +97,12 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
           <SelectTrigger className="h-8 w-full lg:w-auto">
             <div className="flex items-center pr-2">
               <Folder className="mr-2 size-4" />
-              <SelectValue placeholder="All projects" />
+              <SelectValue placeholder={t('filter.all')} />
             </div>
           </SelectTrigger>
 
           <SelectContent>
-            <SelectItem value="all">All projects</SelectItem>
+            <SelectItem value="all">{t('filter.all')}</SelectItem>
             <SelectSeparator />
 
             {projectOptions?.map((project) => (
@@ -111,7 +115,7 @@ export const DataFilters = ({ hideProjectFilter }: DataFiltersProps) => {
       )}
 
       <DatePicker
-        placeholder="Due date"
+        placeholder={t('task.dueDate')}
         className="h-8 w-full lg:w-auto"
         value={dueDate ? new Date(dueDate) : undefined}
         onChange={(date) => {

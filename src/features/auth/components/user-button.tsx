@@ -5,10 +5,12 @@ import { Loader2, LogOut } from 'lucide-react';
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useI18n } from '@/i18n';
 import { useCurrent } from '@/features/auth/api/use-current';
 import { useLogout } from '@/features/auth/api/use-logout';
 
 export const UserButton = () => {
+  const { t } = useI18n();
   const { data: user, isLoading } = useCurrent();
   const { mutate: logout, isPending } = useLogout();
 
@@ -58,7 +60,7 @@ export const UserButton = () => {
           className="flex h-10 cursor-pointer items-center justify-center font-medium text-amber-700"
         >
           <LogOut className="mr-2 size-4" />
-          Sign out
+          {t('auth.signOut')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

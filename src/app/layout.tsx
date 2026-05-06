@@ -5,6 +5,7 @@ import type { PropsWithChildren } from 'react';
 import { QueryProvider } from '@/components/query-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { siteConfig } from '@/config';
+import { I18nProvider } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 import './globals.css';
@@ -17,13 +18,15 @@ export const metadata: Metadata = siteConfig;
 
 const RootLayout = ({ children }: Readonly<PropsWithChildren>) => {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, 'min-h-screen antialiased')}>
-        <QueryProvider>
-          <Toaster theme="light" richColors closeButton />
+        <I18nProvider>
+          <QueryProvider>
+            <Toaster theme="light" richColors closeButton />
 
-          {children}
-        </QueryProvider>
+            {children}
+          </QueryProvider>
+        </I18nProvider>
       </body>
     </html>
   );
