@@ -15,6 +15,7 @@ import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useI18n } from '@/i18n';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -22,6 +23,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+  const { t } = useI18n();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
@@ -70,7 +72,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+                  {t('common.noResults')}
                 </TableCell>
               </TableRow>
             )}
@@ -80,10 +82,10 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button variant="secondary" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-          Previous
+          {t('common.previous')}
         </Button>
         <Button variant="secondary" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-          Next
+          {t('common.next')}
         </Button>
       </div>
     </div>

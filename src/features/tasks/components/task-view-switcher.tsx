@@ -3,17 +3,18 @@
 import { Loader2, PlusIcon } from 'lucide-react';
 import { useQueryState } from 'nuqs';
 import { useCallback } from 'react';
+import { toast } from 'sonner';
 
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useI18n } from '@/i18n';
 import { useBulkUpdateTasks } from '@/features/tasks/api/use-bulk-update-tasks';
 import { useGetTasks } from '@/features/tasks/api/use-get-tasks';
 import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
 import { useTaskFilters } from '@/features/tasks/hooks/use-task-filters';
 import type { TaskStatus } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { useI18n } from '@/i18n';
 
 import { getColumns } from './columns';
 import { DataCalendar } from './data-calendar';
@@ -50,11 +51,21 @@ export const TaskViewSwitcher = ({ projectId, hideProjectFilter }: TaskViewSwitc
 
   const onKanbanChange = useCallback(
     (tasks: { $id: string; status: TaskStatus; position: number }[]) => {
-      bulkUpdateTasks({
-        json: { tasks },
-      });
+      bulkUpdateTasks(
+        {
+          json: { tasks },
+        },
+        {
+          onSuccess: () => {
+            toast.success(t('common.taskUpdated'));
+          },
+          onError: () => {
+            toast.error(t('common.failedToUpdateTask'));
+          },
+        },
+      );
     },
-    [bulkUpdateTasks],
+    [bulkUpdateTasks, t],
   );
 
   return (

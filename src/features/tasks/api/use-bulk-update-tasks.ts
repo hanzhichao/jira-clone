@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { InferRequestType, InferResponseType } from 'hono';
-import { toast } from 'sonner';
 
 import { client } from '@/lib/hono';
 
@@ -19,8 +18,6 @@ export const useBulkUpdateTasks = () => {
       return await response.json();
     },
     onSuccess: ({ data }) => {
-      toast.success('Tasks updated.');
-
       queryClient.invalidateQueries({
         queryKey: ['workspace-analytics', data.workspaceId],
         exact: true,
@@ -36,8 +33,6 @@ export const useBulkUpdateTasks = () => {
     },
     onError: (error) => {
       console.error('[BULK_UPDATE_TASKS]: ', error);
-
-      toast.error('Failed to update tasks.');
     },
   });
 

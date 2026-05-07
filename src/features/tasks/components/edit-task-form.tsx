@@ -2,6 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { DatePicker } from '@/components/date-picker';
@@ -16,6 +17,7 @@ import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { useUpdateTask } from '@/features/tasks/api/use-update-task';
 import { createTaskSchema } from '@/features/tasks/schema';
 import { type Task, TaskStatus } from '@/features/tasks/types';
+import { useI18n } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 interface EditTaskFormProps {
@@ -26,6 +28,7 @@ interface EditTaskFormProps {
 }
 
 export const EditTaskForm = ({ onCancel, memberOptions, projectOptions, initialValues }: EditTaskFormProps) => {
+  const { t } = useI18n();
   const { mutate: createTask, isPending } = useUpdateTask();
 
   const editTaskForm = useForm<z.infer<typeof createTaskSchema>>({
@@ -44,7 +47,11 @@ export const EditTaskForm = ({ onCancel, memberOptions, projectOptions, initialV
       },
       {
         onSuccess: () => {
+          toast.success(t('common.taskUpdated'));
           onCancel?.();
+        },
+        onError: () => {
+          toast.error(t('common.failedToUpdateTask'));
         },
       },
     );

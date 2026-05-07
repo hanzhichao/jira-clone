@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { InferRequestType, InferResponseType } from 'hono';
-import { toast } from 'sonner';
 
 import { client } from '@/lib/hono';
 
@@ -19,8 +18,6 @@ export const useCreateTask = () => {
       return await response.json();
     },
     onSuccess: ({ data }) => {
-      toast.success('Task created.');
-
       queryClient.invalidateQueries({
         queryKey: ['workspace-analytics', data.workspaceId],
         exact: true,
@@ -36,8 +33,6 @@ export const useCreateTask = () => {
     },
     onError: (error) => {
       console.error('[CREATE_TASK]: ', error);
-
-      toast.error('Failed to create task.');
     },
   });
 

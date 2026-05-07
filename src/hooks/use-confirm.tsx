@@ -1,14 +1,18 @@
+'use client';
+
 import { useState } from 'react';
 
 import { ResponsiveModal } from '@/components/responsive-modal';
 import { Button, type ButtonProps } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useI18n } from '@/i18n';
 
 export const useConfirm = (
   title: string,
   message: string,
   variant: ButtonProps['variant'] = 'primary',
 ): [() => JSX.Element, () => Promise<unknown>] => {
+  const { t } = useI18n();
   const [promise, setPromise] = useState<{ resolve: (value: boolean) => void } | null>(null);
 
   const confirm = () => {
@@ -43,11 +47,11 @@ export const useConfirm = (
 
           <div className="flex w-full flex-col items-center justify-end gap-x-2 gap-y-2 pt-4 lg:flex-row">
             <Button onClick={handleCancel} variant="outline" className="w-full lg:w-auto">
-              Cancel
+              {t('common.cancel')}
             </Button>
 
             <Button onClick={handleConfirm} variant={variant} className="w-full lg:w-auto">
-              Confirm
+              {t('common.confirm')}
             </Button>
           </div>
         </CardContent>

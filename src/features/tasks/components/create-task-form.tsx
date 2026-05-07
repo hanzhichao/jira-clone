@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { DatePicker } from '@/components/date-picker';
@@ -12,13 +13,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useI18n } from '@/i18n';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { useCreateTask } from '@/features/tasks/api/use-create-task';
 import { createTaskSchema } from '@/features/tasks/schema';
 import { TaskStatus } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { useI18n } from '@/i18n';
 import { cn } from '@/lib/utils';
 
 interface CreateTaskFormProps {
@@ -55,8 +56,12 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
       },
       {
         onSuccess: ({ data }) => {
+          toast.success(t('common.taskCreated'));
           createTaskForm.reset();
           router.push(`/workspaces/${data.workspaceId}/tasks/${data.$id}`);
+        },
+        onError: () => {
+          toast.error(t('common.failedToCreateTask'));
         },
       },
     );
@@ -177,7 +182,9 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
 
                     <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
                       <FormControl>
-                        <SelectTrigger>{field.value ? <SelectValue placeholder={t('project.projectName')} /> : t('project.projectName')}</SelectTrigger>
+                        <SelectTrigger>
+                          {field.value ? <SelectValue placeholder={t('project.projectName')} /> : t('project.projectName')}
+                        </SelectTrigger>
                       </FormControl>
 
                       <FormMessage />

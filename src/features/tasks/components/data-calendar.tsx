@@ -1,5 +1,5 @@
 import { addMonths, format, getDay, parse, startOfWeek, subMonths } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS, zhCN } from 'date-fns/locale';
 import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
@@ -7,21 +7,20 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import { Button } from '@/components/ui/button';
 import type { Task } from '@/features/tasks/types';
+import { useI18n } from '@/i18n';
 
 import './data-calendar.css';
 import { EventCard } from './event-card';
 
 const locales = {
   'en-US': enUS,
+  'zh-CN': zhCN,
 };
 
-const localizer = dateFnsLocalizer({
-  format,
-  parse,
-  startOfWeek,
-  getDay,
-  locales,
-});
+const dayLabels = {
+  'zh-CN': ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+  'en-US': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+};
 
 interface DataCalendarProps {
   data: Task[];
@@ -30,21 +29,23 @@ interface DataCalendarProps {
 interface CustomToolbarProps {
   date: Date;
   onNavigate: (action: 'PREV' | 'NEXT' | 'TODAY') => void;
+  locale: string;
+  monthFormat: string;
 }
 
-const CustomToolbar = ({ date, onNavigate }: CustomToolbarProps) => {
+const CustomToolbar = ({ date, onNavigate, locale, monthFormat }: CustomToolbarProps) => {
   return (
     <div className="mb-4 flex w-full items-center justify-center gap-x-2 lg:w-auto lg:justify-start">
-      <Button title="Previous Month" onClick={() => onNavigate('PREV')} variant="secondary" size="icon">
+      <Button title={locale === 'zh' ? '上个月' : 'Previous Month'} onClick={() => onNavigate('PREV')} variant="secondary" size="icon">
         <ChevronLeft className="size-4" />
       </Button>
 
       <div className="flex h-8 w-full items-center justify-center rounded-md border border-input px-3 py-2 lg:w-auto">
         <CalendarIcon className="mr-2 size-4" />
-        <p className="text-sm">{format(date, 'MMMM yyyy')}</p>
+        <p className="text-sm">{format(date, monthFormat)}</p>
       </div>
 
-      <Button title="Next Month" onClick={() => onNavigate('NEXT')} variant="secondary" size="icon">
+      <Button title={locale === 'zh' ? '下个月' : 'Next Month'} onClick={() => onNavigate('NEXT')} variant="secondary" size="icon">
         <ChevronRight className="size-4" />
       </Button>
     </div>
@@ -52,6 +53,21 @@ const CustomToolbar = ({ date, onNavigate }: CustomToolbarProps) => {
 };
 
 export const DataCalendar = ({ data }: DataCalendarProps) => {
+  const { locale } = useI18n();
+  const currentLocale = locale === 'zh' ? zhCN : enUS;
+  const monthFormat = locale === 'zh' ? 'yyyy年M月' : 'MMMM yyyy';
+
+  const localizer = dateFnsLocalizer({
+    format,
+    parse,
+    startOfWeek,
+    getDay,
+    locales,
+  });
+
+  const culture = locale === 'zh' ? 'zh-CN' : 'en-US';
+  const days = dayLabels[culture];
+
   const [value, setValue] = useState(data.length > 0 ? new Date(data[0].dueDate) : new Date());
 
   const events = data.map((task) => ({
@@ -80,15 +96,13 @@ export const DataCalendar = ({ data }: DataCalendarProps) => {
       toolbar
       showAllEvents
       className="h-full"
+      culture={culture}
       max={new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
-      formats={{
-        weekdayFormat: (date, culture, localizer) => localizer?.format(date, 'EEE', culture) ?? '',
-      }}
       components={{
         eventWrapper: ({ event }) => (
           <EventCard id={event.id} title={event.title} assignee={event.assignee} project={event.project} status={event.status} />
         ),
-        toolbar: () => <CustomToolbar date={value} onNavigate={handleNavigate} />,
+        toolbar: () => <CustomToolbar date={value} onNavigate={handleNavigate} locale={locale} monthFormat={monthFormat} />,
       }}
     />
   );

@@ -9,6 +9,7 @@ import { useDeleteTask } from '@/features/tasks/api/use-delete-task';
 import type { Task } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { useConfirm } from '@/hooks/use-confirm';
+import { useI18n } from '@/i18n';
 
 interface TaskBreadcrumbsProps {
   project: Project;
@@ -16,9 +17,10 @@ interface TaskBreadcrumbsProps {
 }
 
 export const TaskBreadcrumbs = ({ project, task }: TaskBreadcrumbsProps) => {
+  const { t } = useI18n();
   const router = useRouter();
   const workspaceId = useWorkspaceId();
-  const [ConfirmDialog, confirm] = useConfirm('Delete task?', 'This action cannot be undone.', 'destructive');
+  const [ConfirmDialog, confirm] = useConfirm(t('task.deleteTaskTitle'), t('task.deleteTaskHint'), 'destructive');
 
   const { mutate: deleteTask, isPending } = useDeleteTask();
 
@@ -52,7 +54,7 @@ export const TaskBreadcrumbs = ({ project, task }: TaskBreadcrumbsProps) => {
 
       <Button disabled={isPending} onClick={handleDeleteTask} className="ml-auto" variant="destructive" size="sm">
         <Trash className="size-4 lg:mr-2" />
-        <span className="hidden lg:block">Delete task</span>
+        <span className="hidden lg:block">{t('task.deleteTask')}</span>
       </Button>
     </div>
   );
