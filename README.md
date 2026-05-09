@@ -120,7 +120,7 @@ jira-clone/
   |- .gitignore
   |- .prettierrc.json
   |- .prettierrc.mjs
-  |- bun.lockb
+  |- bun.lock
   |- components.json
   |- drizzle.config.ts
   |- environment.d.ts
