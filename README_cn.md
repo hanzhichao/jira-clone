@@ -19,6 +19,15 @@
 
 ## 🚀 快速开始
 
+### 页面截图
+
+![首页](/.github/images/home-cn.png '首页')
+
+![任务列表](/.github/images/mytasks-cn.png '任务列表')
+
+![看板视图](/.github/images/kanban-cn.png '看板视图')
+
+
 ### 1. 环境准备
 
 确保已安装 **Git** 和 **Node.js** (v18+)。
