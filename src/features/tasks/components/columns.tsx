@@ -68,6 +68,8 @@ export const getColumns = (t: TranslationFunction): ColumnDef<Task>[] => [
     cell: ({ row }) => {
       const assignee = row.original.assignee;
 
+      if (!assignee) return null;
+
       return (
         <div className="flex items-center gap-x-2 text-sm font-medium">
           <MemberAvatar fallbackClassName="text-xs" className="size-6" name={assignee.name} />
