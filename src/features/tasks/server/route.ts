@@ -5,7 +5,7 @@ import { eq, and, desc, inArray, asc } from 'drizzle-orm';
 
 import { getMember } from '@/features/members/utils';
 import { createTaskSchema } from '@/features/tasks/schema';
-import { type Task, TaskStatus } from '@/features/tasks/types';
+import { type Task, TaskStatus, TaskType } from '@/features/tasks/types';
 import { sessionMiddleware } from '@/lib/session-middleware';
 import { db, tasks, projects, members, users } from '@/db';
 
@@ -20,13 +20,14 @@ const app = new Hono()
         projectId: z.string().nullish(),
         assigneeId: z.string().nullish(),
         status: z.nativeEnum(TaskStatus).nullish(),
+        type: z.nativeEnum(TaskType).nullish(),
         search: z.string().nullish(),
         dueDate: z.string().nullish(),
       }),
     ),
     async (ctx) => {
       const user = ctx.get('user');
-      const { workspaceId, projectId, assigneeId, status, search, dueDate } = ctx.req.valid('query');
+      const { workspaceId, projectId, assigneeId, status, type, search, dueDate } = ctx.req.valid('query');
 
       const member = await getMember({
         workspaceId,
@@ -41,6 +42,7 @@ const app = new Hono()
 
       if (projectId) conditions.push(eq(tasks.projectId, projectId));
       if (status) conditions.push(eq(tasks.status, status));
+      if (type) conditions.push(eq(tasks.type, type));
       if (assigneeId) conditions.push(eq(tasks.assigneeId, assigneeId));
       if (dueDate) conditions.push(eq(tasks.dueDate, dueDate));
       // search is simplified for now
@@ -129,7 +131,7 @@ const app = new Hono()
   })
   .post('/', sessionMiddleware, zValidator('json', createTaskSchema), async (ctx) => {
     const user = ctx.get('user');
-    const { name, status, workspaceId, projectId, dueDate, assigneeId } = ctx.req.valid('json');
+    const { name, status, type, priority, workspaceId, projectId, dueDate, assigneeId, description, parentId } = ctx.req.valid('json');
 
     const member = await getMember({
       workspaceId,
@@ -154,10 +156,14 @@ const app = new Hono()
       id: taskId,
       name,
       status,
+      type: type ?? 'TASK',
+      priority: priority ?? null,
       workspaceId,
       projectId: projectId ?? null,
       dueDate: dueDate ? dueDate.toISOString() : null,
       assigneeId: assigneeId ?? null,
+      description: description ?? null,
+      parentId: parentId ?? null,
       position: newPosition,
     } as any;
 
@@ -167,7 +173,7 @@ const app = new Hono()
   })
   .patch('/:taskId', sessionMiddleware, zValidator('json', createTaskSchema.partial()), async (ctx) => {
     const user = ctx.get('user');
-    const { name, status, description, projectId, dueDate, assigneeId } = ctx.req.valid('json');
+    const { name, status, type, priority, description, projectId, dueDate, assigneeId, parentId } = ctx.req.valid('json');
     const { taskId } = ctx.req.param();
 
     const [existingTask] = await db.select().from(tasks).where(eq(tasks.id, taskId));
@@ -185,12 +191,15 @@ const app = new Hono()
     }
 
     const updateData: any = {};
-    if (name) updateData.name = name;
-    if (status) updateData.status = status;
-    if (description) updateData.description = description;
-    if (projectId) updateData.projectId = projectId;
-    if (dueDate) updateData.dueDate = dueDate.toISOString();
-    if (assigneeId) updateData.assigneeId = assigneeId;
+    if (name !== undefined) updateData.name = name;
+    if (status !== undefined) updateData.status = status;
+    if (type !== undefined) updateData.type = type;
+    if (priority !== undefined) updateData.priority = priority;
+    if (description !== undefined) updateData.description = description;
+    if (projectId !== undefined) updateData.projectId = projectId;
+    if (dueDate !== undefined) updateData.dueDate = dueDate.toISOString();
+    if (assigneeId !== undefined) updateData.assigneeId = assigneeId;
+    if (parentId !== undefined) updateData.parentId = parentId;
 
     await db.update(tasks).set(updateData).where(eq(tasks.id, taskId));
 

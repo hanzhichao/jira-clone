@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import { useEditTaskModal } from '@/features/tasks/hooks/use-edit-task-modal';
-import type { Task } from '@/features/tasks/types';
+import { type Task, TaskType } from '@/features/tasks/types';
 import { useI18n } from '@/i18n';
 import { snakeCaseToTitleCase } from '@/lib/utils';
 
@@ -52,6 +52,12 @@ export const TaskOverview = ({ task }: TaskOverviewProps) => {
 
           <OverviewProperty label={t('task.status')}>
             <Badge variant={task.status}>{snakeCaseToTitleCase(task.status)}</Badge>
+          </OverviewProperty>
+
+          <OverviewProperty label={t('task.type')}>
+            <Badge variant={task.type || TaskType.TASK} className="text-sm font-medium">
+              {t(`task.${(task.type || TaskType.TASK).toLowerCase()}Type`)}
+            </Badge>
           </OverviewProperty>
         </div>
       </div>

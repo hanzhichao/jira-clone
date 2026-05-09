@@ -12,12 +12,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
 import { useCreateTask } from '@/features/tasks/api/use-create-task';
 import { createTaskSchema } from '@/features/tasks/schema';
-import { TaskStatus } from '@/features/tasks/types';
+import { TaskStatus, TaskType, TaskPriority } from '@/features/tasks/types';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
 import { useI18n } from '@/i18n';
 import { cn } from '@/lib/utils';
@@ -27,9 +28,10 @@ interface CreateTaskFormProps {
   onCancel?: () => void;
   projectOptions: { id: string; name: string; imageUrl?: string }[];
   memberOptions: { id: string; name: string }[];
+  taskOptions?: { id: string; name: string }[];
 }
 
-export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, projectOptions }: CreateTaskFormProps) => {
+export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, projectOptions, taskOptions = [] }: CreateTaskFormProps) => {
   const { t } = useI18n();
   const router = useRouter();
   const workspaceId = useWorkspaceId();
@@ -40,10 +42,13 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
     resolver: zodResolver(createTaskSchema),
     defaultValues: {
       name: '',
+      type: 'TASK',
+      priority: undefined,
       dueDate: undefined,
       assigneeId: undefined,
       description: '',
       projectId: undefined,
+      parentId: undefined,
       status: initialStatus ?? undefined,
       workspaceId,
     },
@@ -172,7 +177,7 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                 )}
               />
 
-              <FormField
+<FormField
                 disabled={isPending}
                 control={createTaskForm.control}
                 name="projectId"
@@ -187,7 +192,7 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                         </SelectTrigger>
                       </FormControl>
 
-                      <FormMessage />
+                      
 
                       <SelectContent>
                         {projectOptions.map((project) => (
@@ -200,6 +205,102 @@ export const CreateTaskForm = ({ initialStatus, onCancel, memberOptions, project
                         ))}
                       </SelectContent>
                     </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createTaskForm.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('task.type')}</FormLabel>
+
+                    <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('task.type')} />
+                        </SelectTrigger>
+                      </FormControl>
+
+                      <SelectContent>
+                        <SelectItem value={TaskType.TASK}>{t('task.taskType')}</SelectItem>
+                        <SelectItem value={TaskType.BUG}>{t('task.bugType')}</SelectItem>
+                        <SelectItem value={TaskType.TEST}>{t('task.testType')}</SelectItem>
+                        <SelectItem value={TaskType.STORY}>{t('task.storyType')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createTaskForm.control}
+                name="priority"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('task.priority')}</FormLabel>
+
+                    <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          {field.value ? <SelectValue placeholder={t('task.priority')} /> : t('task.selectPriority')}
+                        </SelectTrigger>
+                      </FormControl>
+
+                      <SelectContent>
+                        <SelectItem value={TaskPriority.LOW}>{t('task.low')}</SelectItem>
+                        <SelectItem value={TaskPriority.MEDIUM}>{t('task.medium')}</SelectItem>
+                        <SelectItem value={TaskPriority.HIGH}>{t('task.high')}</SelectItem>
+                        <SelectItem value={TaskPriority.URGENT}>{t('task.urgent')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createTaskForm.control}
+                name="parentId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('task.parentTask')}</FormLabel>
+
+                    <Select disabled={isPending} defaultValue={field.value} value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger>
+                          {field.value ? <SelectValue placeholder={t('task.selectParentTask')} /> : t('task.selectParentTask')}
+                        </SelectTrigger>
+                      </FormControl>
+
+                      <SelectContent>
+                        {taskOptions.map((task) => (
+                          <SelectItem key={task.id} value={task.id}>
+                            {task.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createTaskForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('task.description')}</FormLabel>
+
+                    <FormControl>
+                      <Textarea {...field} placeholder={t('task.enterDescription')} className="min-h-[100px]" />
+                    </FormControl>
+
+                    <FormMessage />
                   </FormItem>
                 )}
               />

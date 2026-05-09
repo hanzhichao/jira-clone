@@ -1,16 +1,18 @@
 'use client';
 
-import { Loader2, LogOut } from 'lucide-react';
+import { Loader2, LogOut, Languages } from 'lucide-react';
 
 import { DottedSeparator } from '@/components/dotted-separator';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useI18n } from '@/i18n';
 import { useCurrent } from '@/features/auth/api/use-current';
 import { useLogout } from '@/features/auth/api/use-logout';
 
+import { LanguageSwitcher } from '@/components/language-switcher';
+
 export const UserButton = () => {
-  const { t } = useI18n();
+  const { t, locale, setLocale } = useI18n();
   const { data: user, isLoading } = useCurrent();
   const { mutate: logout, isPending } = useLogout();
 
@@ -53,6 +55,29 @@ export const UserButton = () => {
         </div>
 
         <DottedSeparator className="mb-1" />
+
+        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2">
+          <Languages className="size-4" />
+          <div className="flex flex-1 flex-col">
+            <span className="text-sm font-medium">Language</span>
+            <div className="flex gap-2 mt-1">
+              <button
+                onClick={() => setLocale('en')}
+                className={`text-xs px-2 py-1 rounded ${locale === 'en' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+              >
+                English
+              </button>
+              <button
+                onClick={() => setLocale('zh')}
+                className={`text-xs px-2 py-1 rounded ${locale === 'zh' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+              >
+                中文
+              </button>
+            </div>
+          </div>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
 
         <DropdownMenuItem
           disabled={isPending}

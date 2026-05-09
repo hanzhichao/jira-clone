@@ -42,6 +42,8 @@ export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   status: text("status").notNull(),
+  type: text("type"),
+  priority: text("priority"),
   workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
   projectId: text("project_id").references(() => projects.id),
   assigneeId: text("assignee_id").references(() => members.id),

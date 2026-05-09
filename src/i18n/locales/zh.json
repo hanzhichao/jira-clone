@@ -99,6 +99,8 @@
     "createProject": "创建项目",
     "projectName": "项目名称",
     "enterProjectName": "输入项目名称",
+    "projectKey": "项目标识",
+    "enterProjectKey": "例如：WEB, MOB",
     "projectIcon": "项目图标",
     "projects": "项目",
     "settings": "项目设置",
@@ -106,7 +108,9 @@
     "deleteProjectHint": "此操作无法撤销。",
     "dangerZone": "危险区域",
     "dangerZoneHint": "删除项目不可撤销，将删除所有相关数据。",
-    "editProject": "编辑项目"
+    "editProject": "编辑项目",
+    "description": "描述",
+    "enterProjectDescription": "输入项目描述"
   },
   "task": {
     "searchPlaceholder": "搜索任务",
@@ -139,7 +143,27 @@
     "overview": "概览",
     "addDescription": "添加描述...",
     "saving": "保存中...",
-    "noDescription": "暂无描述"
+    "noDescription": "暂无描述",
+    "type": "类型",
+    "taskType": "任务",
+    "bugType": "缺陷",
+    "testType": "测试",
+    "storyType": "故事",
+    "parentTask": "父任务",
+    "selectParentTask": "选择父任务（可选）",
+    "enterDescription": "输入任务描述",
+    "editTaskTitle": "编辑任务",
+    "enterTaskName": "输入任务名称",
+    "selectDueDate": "选择截止日期",
+    "selectAssignee": "选择负责人",
+    "selectStatus": "选择状态",
+    "selectProject": "选择项目",
+    "low": "低",
+    "medium": "中",
+    "high": "高",
+    "urgent": "紧急",
+    "selectPriority": "选择优先级",
+    "description": "描述"
   },
   "member": {
     "members": "成员",

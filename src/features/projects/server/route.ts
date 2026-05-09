@@ -13,7 +13,7 @@ import { TaskStatus } from '@/features/tasks/types';
 const app = new Hono()
   .post('/', sessionMiddleware, zValidator('form', createProjectSchema), async (ctx) => {
     const user = ctx.get('user');
-    const { name, image, workspaceId } = ctx.req.valid('form');
+    const { name, key, description, image, workspaceId } = ctx.req.valid('form');
 
     const member = await getMember({
       workspaceId,
@@ -38,6 +38,8 @@ const app = new Hono()
     const project = {
       id: projectId,
       name,
+      key,
+      description: description ?? null,
       imageId: uploadedImageId,
       workspaceId,
     };
@@ -117,7 +119,7 @@ const app = new Hono()
   .patch('/:projectId', sessionMiddleware, zValidator('form', updateProjectSchema), async (ctx) => {
     const user = ctx.get('user');
     const { projectId } = ctx.req.param();
-    const { name, image } = ctx.req.valid('form');
+    const { name, key, description, image } = ctx.req.valid('form');
 
     const [existingProject] = await db.select().from(projects).where(eq(projects.id, projectId));
     if (!existingProject) {
@@ -143,6 +145,8 @@ const app = new Hono()
 
     const updateData: any = {};
     if (name) updateData.name = name;
+    if (key) updateData.key = key;
+    if (description !== undefined) updateData.description = description;
     if (uploadedImageId) updateData.imageId = uploadedImageId;
 
     await db.update(projects).set(updateData).where(eq(projects.id, projectId));

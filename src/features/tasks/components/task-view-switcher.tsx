@@ -33,7 +33,7 @@ export const TaskViewSwitcher = ({ projectId, hideProjectFilter }: TaskViewSwitc
   const [view, setView] = useQueryState('task-view', {
     defaultValue: 'table',
   });
-  const [{ status, assigneeId, projectId: filteredProjectId, dueDate, search }] = useTaskFilters();
+  const [{ status, type, assigneeId, projectId: filteredProjectId, dueDate, search }] = useTaskFilters();
 
   const workspaceId = useWorkspaceId();
 
@@ -41,6 +41,7 @@ export const TaskViewSwitcher = ({ projectId, hideProjectFilter }: TaskViewSwitc
   const { data: tasks, isLoading: isLoadingTasks } = useGetTasks({
     workspaceId,
     status,
+    type,
     assigneeId,
     projectId: projectId ?? filteredProjectId,
     dueDate,

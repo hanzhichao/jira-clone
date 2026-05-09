@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useI18n } from '@/i18n';
 import { useCreateProject } from '@/features/projects/api/use-create-project';
 import { createProjectSchema } from '@/features/projects/schema';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
@@ -28,6 +30,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
   const router = useRouter();
   const workspaceId = useWorkspaceId();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { t } = useI18n();
 
   const { mutate: createProject, isPending } = useCreateProject();
 
@@ -35,6 +38,8 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
     resolver: zodResolver(createProjectSchema),
     defaultValues: {
       name: '',
+      key: '',
+      description: '',
       image: undefined,
       workspaceId,
     },
@@ -78,7 +83,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
   return (
     <Card className="size-full border-none shadow-none">
       <CardHeader className="flex p-7">
-        <CardTitle className="text-xl font-bold">Create a new project</CardTitle>
+        <CardTitle className="text-xl font-bold">{t('project.createProject')}</CardTitle>
       </CardHeader>
 
       <div className="px-7">
@@ -92,26 +97,10 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
               <FormField
                 disabled={isPending}
                 control={createProjectForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Name</FormLabel>
-
-                    <FormControl>
-                      <Input {...field} type="text" placeholder="Enter project name" />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                disabled={isPending}
-                control={createProjectForm.control}
                 name="image"
                 render={({ field }) => (
                   <div className="flex flex-col gap-y-2">
+                    <FormLabel>{t('project.projectIcon')}</FormLabel>
                     <div className="flex items-center gap-x-5">
                       {field.value ? (
                         <div className="relative size-[72px] overflow-hidden rounded-md">
@@ -131,8 +120,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
                       )}
 
                       <div className="flex flex-col">
-                        <p className="text-sm">Project Icon</p>
-                        <p className="text-xs text-muted-foreground">JPG, PNG, or JPEG, max 1MB</p>
+                        <p className="text-xs text-muted-foreground">{t('common.imageHint')}</p>
 
                         <input
                           type="file"
@@ -156,7 +144,7 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
                               if (inputRef.current) inputRef.current.value = '';
                             }}
                           >
-                            Remove Image
+                            {t('common.removeImage')}
                           </Button>
                         ) : (
                           <Button
@@ -167,12 +155,63 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
                             className="mt-2 w-fit"
                             onClick={() => inputRef.current?.click()}
                           >
-                            Upload Image
+                            {t('common.uploadImage')}
                           </Button>
                         )}
                       </div>
                     </div>
                   </div>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createProjectForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('project.projectName')}</FormLabel>
+
+                    <FormControl>
+                      <Input {...field} type="text" placeholder={t('project.enterProjectName')} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createProjectForm.control}
+                name="key"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('project.projectKey')}</FormLabel>
+
+                    <FormControl>
+                      <Input {...field} type="text" placeholder={t('project.enterProjectKey')} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                disabled={isPending}
+                control={createProjectForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('project.description')}</FormLabel>
+
+                    <FormControl>
+                      <Textarea {...field} placeholder={t('project.enterProjectDescription')} rows={3} />
+                    </FormControl>
+
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </div>
@@ -188,11 +227,11 @@ export const CreateProjectForm = ({ onCancel }: CreateProjectFormProps) => {
                 onClick={onCancel}
                 className={cn(!onCancel && 'invisible')}
               >
-                Cancel
+                {t('common.cancel')}
               </Button>
 
               <Button disabled={isPending} type="submit" size="lg">
-                Create Project
+                {t('project.createProject')}
               </Button>
             </div>
           </form>

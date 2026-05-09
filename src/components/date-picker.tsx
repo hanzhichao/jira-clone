@@ -2,6 +2,7 @@
 
 import { PopoverClose } from '@radix-ui/react-popover';
 import { format } from 'date-fns';
+import { enUS, zhCN } from 'date-fns/locale';
 import { CalendarIcon, OctagonMinus } from 'lucide-react';
 import * as React from 'react';
 
@@ -11,7 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useI18n } from '@/i18n';
 import { cn } from '@/lib/utils';
 
-interface DatePickerProps {
+import type { HTMLAttributes } from 'react';
+
+interface DatePickerProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   value: Date | undefined;
   onChange: (date: Date | null) => void;
   disabled?: boolean;
@@ -20,42 +23,54 @@ interface DatePickerProps {
   showReset?: boolean;
 }
 
-export const DatePicker = ({
+const localeMap = {
+  en: enUS,
+  zh: zhCN,
+};
+
+export const DatePicker = React.forwardRef<HTMLDivElement, DatePickerProps>(({
   value,
   onChange,
   disabled = false,
   className,
   placeholder,
   showReset = false,
-}: DatePickerProps) => {
-  const { t } = useI18n();
+  ...props
+}, ref) => {
+  const { t, locale } = useI18n();
   const defaultPlaceholder = t('common.selectDate');
+  const dateLocale = localeMap[locale] || enUS;
+
   return (
-    <Popover>
-      <PopoverTrigger disabled={disabled} asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="lg"
-          className={cn('w-full justify-start px-3 text-left font-normal', !value && 'text-muted-foreground', className)}
-        >
-          <CalendarIcon className="mr-2 size-4" />
-          {value ? format(value, 'PPP') : <span>{placeholder || defaultPlaceholder}</span>}
-        </Button>
-      </PopoverTrigger>
+    <div ref={ref} {...props}>
+      <Popover>
+        <PopoverTrigger disabled={disabled} asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="lg"
+            className={cn('w-full justify-start px-3 text-left font-normal', !value && 'text-muted-foreground', className)}
+          >
+            <CalendarIcon className="mr-2 size-4" />
+            {value ? format(value, 'PPP', { locale: dateLocale }) : <span>{placeholder || defaultPlaceholder}</span>}
+          </Button>
+        </PopoverTrigger>
 
-      <PopoverContent className="w-auto p-0">
-        <Calendar mode="single" selected={value} onSelect={(date) => onChange(date as Date)} initialFocus />
+        <PopoverContent className="w-auto p-0">
+          <Calendar mode="single" selected={value} onSelect={(date) => onChange(date as Date)} initialFocus locale={dateLocale} />
 
-        {showReset && value && (
-          <PopoverClose asChild>
-            <Button onClick={() => onChange(null)} variant="secondary" size="sm" className="w-full">
-              <OctagonMinus className="size-4" />
-              {t('filter.resetFilter')}
-            </Button>
-          </PopoverClose>
-        )}
-      </PopoverContent>
-    </Popover>
+          {showReset && value && (
+            <PopoverClose asChild>
+              <Button onClick={() => onChange(null)} variant="secondary" size="sm" className="w-full">
+                <OctagonMinus className="size-4" />
+                {t('filter.resetFilter')}
+              </Button>
+            </PopoverClose>
+          )}
+        </PopoverContent>
+      </Popover>
+    </div>
   );
-};
+});
+
+DatePicker.displayName = 'DatePicker';

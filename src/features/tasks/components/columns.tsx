@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useI18n } from '@/i18n';
 import { MemberAvatar } from '@/features/members/components/member-avatar';
 import { ProjectAvatar } from '@/features/projects/components/project-avatar';
+import { TaskType } from '@/features/tasks/types';
 import type { Task } from '@/features/tasks/types';
 import { snakeCaseToTitleCase } from '@/lib/utils';
 
@@ -31,6 +32,22 @@ export const getColumns = (t: TranslationFunction): ColumnDef<Task>[] => [
       const name = row.original.name;
 
       return <p className="line-clamp-1">{name}</p>;
+    },
+  },
+  {
+    accessorKey: 'type',
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
+          {t('task.type')}
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const type = row.original.type || TaskType.TASK;
+
+      return <Badge variant={type} className="text-sm font-medium">{t(`task.${type.toLowerCase()}Type`)}</Badge>;
     },
   },
   {

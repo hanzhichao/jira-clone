@@ -32,6 +32,8 @@ export const members = sqliteTable("members", {
 export const projects = sqliteTable("projects", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  key: text("key").notNull(),
+  description: text("description"),
   imageId: text("image_id"),
   workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -42,12 +44,15 @@ export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   status: text("status").notNull(), // BACKLOG, TODO, IN_PROGRESS, IN_REVIEW, DONE
+  type: text("type").notNull().default("TASK"), // TASK, BUG, TEST, STORY
   workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
   projectId: text("project_id").references(() => projects.id),
   assigneeId: text("assignee_id").references(() => members.id),
   description: text("description"),
   dueDate: text("due_date"),
   position: integer("position").notNull(),
+  parentId: text("parent_id"),
+  links: text("links"), // JSON
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });

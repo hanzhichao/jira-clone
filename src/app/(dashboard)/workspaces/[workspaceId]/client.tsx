@@ -21,8 +21,11 @@ import type { Project } from '@/features/projects/types';
 import { useGetTasks } from '@/features/tasks/api/use-get-tasks';
 import { useCreateTaskModal } from '@/features/tasks/hooks/use-create-task-modal';
 import type { Task } from '@/features/tasks/types';
+import { Badge } from '@/components/ui/badge';
+import { TaskType } from '@/features/tasks/types';
 import { useGetWorkspaceAnalytics } from '@/features/workspaces/api/use-get-workspace-analytics';
 import { useWorkspaceId } from '@/features/workspaces/hooks/use-workspace-id';
+import { snakeCaseToTitleCase } from '@/lib/utils';
 
 export const WorkspaceIdClient = () => {
   const { t } = useI18n();
@@ -80,14 +83,17 @@ export const TaskList = ({ data, total }: TaskListProps) => {
               <Link href={`/workspaces/${workspaceId}/tasks/${task.$id}`}>
                 <Card className="rounded-lg shadow-none transition hover:opacity-75">
                   <CardContent className="p-4">
-                    <p className="truncate text-lg font-medium">{task.name}</p>
-
                     <div className="flex items-center gap-x-2">
-                      <p>{task.project?.name}</p>
+                      <Badge variant={task.type || TaskType.TASK} className="text-[10px] px-1.5 py-0 uppercase tracking-wider">{t(`task.${(task.type || TaskType.TASK).toLowerCase()}Type`)}</Badge>
+                      <p className="truncate text-lg font-medium">{task.name}</p>
+                    </div>
+
+                    <div className="flex items-center gap-x-2 mt-1">
+                      <p className="text-sm text-muted-foreground">{task.project?.name}</p>
 
                       <div aria-hidden className="size-1 rounded-full bg-neutral-300" />
 
-                      <div className="flex items-center text-sm text-muted-foreground">
+                      <div className="flex items-center text-xs text-muted-foreground">
                         <CalendarIcon className="mr-1 size-3" />
                         <span className="truncate">{formatDistanceToNow(new Date(task.dueDate))}</span>
                       </div>

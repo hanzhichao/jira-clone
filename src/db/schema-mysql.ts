@@ -32,6 +32,8 @@ export const members = mysqlTable("members", {
 export const projects = mysqlTable("projects", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  key: text("key").notNull(),
+  description: text("description"),
   imageId: text("image_id"),
   workspaceId: text("workspace_id").notNull(),
   createdAt: datetime("created_at").default(sql`CURRENT_TIMESTAMP`),
@@ -41,13 +43,16 @@ export const projects = mysqlTable("projects", {
 export const tasks = mysqlTable("tasks", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  status: text("status").notNull(), // BACKLOG, TODO, IN_PROGRESS, IN_REVIEW, DONE
+  status: text("status").notNull(),
+  type: text("type").notNull().default("TASK"),
   workspaceId: text("workspace_id").notNull(),
   projectId: text("project_id"),
   assigneeId: text("assignee_id"),
   description: text("description"),
   dueDate: datetime("due_date"),
   position: int("position").notNull(),
+  parentId: text("parent_id"),
+  links: text("links"),
   createdAt: datetime("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: datetime("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
