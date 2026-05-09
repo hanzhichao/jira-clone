@@ -6,8 +6,7 @@ import { eq, and } from 'drizzle-orm';
 import { MemberRole } from '@/features/members/types';
 import { getMember } from '@/features/members/utils';
 import { sessionMiddleware } from '@/lib/session-middleware';
-import { db } from '@/db';
-import { members, users } from '@/db/schema';
+import { db, members, users } from '@/db';
 
 const app = new Hono()
   .get(

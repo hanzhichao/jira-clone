@@ -1,8 +1,10 @@
 <a name="readme-top"></a>
 
-# Full-stack Jira Clone using Next.js 14 and Appwrite
+# Full-stack Jira Clone using Next.js 14
 
-![Full-stack Jira Clone using Next.js 14 and Appwrite](/.github/images/img_main.png 'Full-stack Jira Clone using Next.js 14 and Appwrite')
+![Full-stack Jira Clone using Next.js 14](/.github/images/img_main.png 'Full-stack Jira Clone using Next.js 14')
+
+> 📖 **中文版本**: [README_cn.md](./README_cn.md)
 
 [![Ask Me Anything!](https://flat.badgen.net/static/Ask%20me/anything?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy 'Ask Me Anything!')
 [![GitHub license](https://flat.badgen.net/github/license/sanidhyy/jira-clone?icon=github&color=black&scale=1.01)](https://github.com/sanidhyy/jira-clone/blob/main/LICENSE 'GitHub license')
@@ -120,184 +122,101 @@ jira-clone/
 
 ## :toolbox: Getting Started
 
-1. Make sure **Git** and **NodeJS** is installed.
-2. Clone this repository to your local computer.
-3. Create `.env.local` file in **root** directory.
-4. Contents of `.env.local`:
+### 1. Prerequisites
+
+Make sure **Git** and **Node.js** (v18+) are installed.
+
+### 2. Clone & Install
+
+```bash
+git clone https://github.com/sanidhyy/jira-clone.git
+cd jira-clone
+npm install --legacy-peer-deps
+```
+
+### 3. Database Configuration
+
+Create `.env.local` in the **root** directory with your database settings:
 
 ```env
 # .env.local
 
-# disable next.js telemetry
+# disable next.js telemetry (optional)
 NEXT_TELEMETRY_DISABLED=1
 
 # app base url
 NEXT_PUBLIC_APP_BASE_URL=http://localhost:3000
 
-# appwrite project and key
-NEXT_PUBLIC_APPWRITE_ENDPOINT=https://cloud.appwrite.io/v1
-NEXT_PUBLIC_APPWRITE_PROJECT=XXXXXXXXXXXXXXXXXXXX
-NEXT_PUBLIC_APPWRITE_IMAGES_BUCKET_ID=XXXXXXXXXXXXXXXXXXX
-NEXT_APPWRITE_KEY=standard_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# =====================
+# Database Configuration
+# =====================
+# Supported: sqlite, mysql, postgresql
+DB_TYPE=sqlite
 
-# appwrite database ids
-NEXT_PUBLIC_APPWRITE_DATABASE_ID=XXXXXXXXXXXXXXXXXXX
-NEXT_PUBLIC_APPWRITE_MEMBERS_ID=XXXXXXXXXXXXXXXXXXX
-NEXT_PUBLIC_APPWRITE_PROJECTS_ID=XXXXXXXXXXXXXXXXXXX
-NEXT_PUBLIC_APPWRITE_TASKS_ID=XXXXXXXXXXXXXXXXXXX
-NEXT_PUBLIC_APPWRITE_WORKSPACES_ID=XXXXXXXXXXXXXXXXXXX
+# SQLite (default, no extra config needed)
+# DB_PATH=./sqlite.db
 
+# MySQL (uncomment and configure if using MySQL)
+# DB_TYPE=mysql
+# DB_HOST=localhost
+# DB_PORT=3306
+# DB_USER=root
+# DB_PASSWORD=your_password
+# DB_NAME=jira_clone
+
+# PostgreSQL (uncomment and configure if using PostgreSQL)
+# DB_TYPE=postgresql
+# DB_HOST=localhost
+# DB_PORT=5432
+# DB_USER=postgres
+# DB_PASSWORD=your_password
+# DB_NAME=jira_clone
 ```
 
-### 5. Disable Next.js Telemetry
+### 4. Initialize Database
 
-Set `NEXT_TELEMETRY_DISABLED` to `1`. This disables Next.js telemetry (optional).
+```bash
+# Create tables and seed sample data
+npm run db:reset
+```
 
-### 6. App Base URL
+This creates:
+- 2 demo users (demo@example.com / password123)
+- 1 workspace, 2 projects, 7 tasks
+- Full CRUD functionality
 
-Set the `NEXT_PUBLIC_APP_BASE_URL` to `http://localhost:3000` where your app will be running locally or in production.
+### 5. Start Development Server
 
-### 7. Get Appwrite Endpoint and Project ID
+```bash
+npm run dev
+```
 
-1. Create an account on **[Appwrite](https://appwrite.io/)**.
-2. **Create a new project**:
-   - Go to **Dashboard** > **Create Project**.
-3. Retrieve your **Appwrite Endpoint** and **Project ID**:
-   - Navigate to **Settings** > **Overview** > **API Credentials**.
-   - Copy the **Endpoint** and **Project ID**, and save them in `.env.local` as `NEXT_PUBLIC_APPWRITE_ENDPOINT` and `NEXT_PUBLIC_APPWRITE_PROJECT`.
-
----
-
-### 8. Generate Appwrite API Key
-
-1. Go to the **Overview** tab.
-2. Navigate to **Integrations** > **API Keys** > **Create API Key**:
-   - Name: `jira-clone-web` (or any preferred name).
-   - Expiration Time: **Never**.
-   - Scopes:
-     - `auth`
-     - `session.write`
-     - `users.read`.
-3. Copy the generated API key and save it in `.env.local` as `NEXT_APPWRITE_KEY`.
+Open http://localhost:3000 and login with:
+- **Email**: demo@example.com
+- **Password**: password123
 
 ---
 
-### 9. Create Database and Collections
+## 🔧 Database Scripts
 
-#### Create the Database
+| Command | Description |
+|---------|-------------|
+| `npm run db:migrate` | Create database tables |
+| `npm run db:seed` | Insert sample data |
+| `npm run db:reset` | Reset database (drop + migrate + seed) |
 
-1. Go to the **Databases** tab.
-2. Create a new database named `jira-clone`.
-3. Copy the **Database ID** (displayed near the database name) and save it in `.env.local` as `NEXT_PUBLIC_APPWRITE_DATABASE_ID`.
+### Reset with specific database type
 
----
+```bash
+# SQLite
+npm run db:reset
 
-#### Create Collections and Define Attributes
+# MySQL
+DB_TYPE=mysql DB_HOST=localhost DB_USER=root DB_PASSWORD=xxx DB_NAME=jira_clone npm run db:reset
 
-1. **Tasks** Collection:
-
-- Attributes:
-  - `workspaceId` (String, Required, Size: 50)
-  - `name` (String, Required, Size: 256)
-  - `projectId` (String, Required, Size: 50)
-  - `assigneeId` (String, Required, Size: 50)
-  - `description` (String, Optional, Size: 2048)
-  - `dueDate` (DateTime, Required)
-  - `status` (Enum, Required)
-    - Elements: BACKLOG, TODO, IN_PROGRESS, IN_REVIEW, DONE
-  - `position` (Integer, Required, Min: 1000, Max: 1000000)
-
-2. **Projects** Collection:
-
-- Attributes:
-  - `workspaceId` (String, Required, Size: 50)
-  - `imageId` (String, Optional, Size: 50)
-  - `name` (String, Required, Size: 256)
-
-3. **Members** Collection:
-
-- Attributes:
-  - `userId` (String, Required, Size: 50)
-  - `workspaceId` (String, Required, Size: 50)
-  - `role` (Enum, Required)
-    - Elements: ADMIN, MEMBER
-
-4. **Workspaces** Collection:
-
-- Attributes:
-  - `name` (String, Required, Size: 256)
-  - `userId` (String, Required, Size: 50)
-  - `imageId` (String, Optional, Size: 50)
-  - `inviteCode` (String, Required, Size: 10)
-
-#### Set Permissions for Collections
-
-For each collection:
-
-1. Navigate to **Settings** > **Permissions**.
-2. Add the role **All Users** with **Create**, **Read**, **Update**, and **Delete** permissions and click Update.
-
-3. Copy the **Collection IDs** (displayed near collection names) for each collection and save them in `.env.local` as `NEXT_PUBLIC_APPWRITE_MEMBERS_ID`, `NEXT_PUBLIC_APPWRITE_PROJECTS_ID`, `NEXT_PUBLIC_APPWRITE_TASKS_ID`, and `NEXT_PUBLIC_APPWRITE_WORKSPACES_ID`.
-
----
-
-### 10. Add Index to the Tasks Collection
-
-1. Go to the **Tasks** collection.
-2. Navigate to the **Indexes** tab.
-3. Create a new index:
-   - Name: `task_name`.
-   - Type: **Full Text**.
-   - Attribute: **name**.
-   - Order: **DESC**.
-
----
-
-### 11. Create a Bucket for Images
-
-1. Go to the **Storage** tab.
-2. Create a new bucket named `images` (or any preferred name).
-3. Configure bucket settings:
-   - **Permissions**: Add the role **All Users** with **Create**, **Read**, **Update**, and **Delete** permissions.
-   - **Maximum File Size**: Set to **1 MB**.
-   - **Allowed File Extensions**: Add `jpg`, `png`, and `jpeg`.
-   - Save the settings.
-4. Copy the **Bucket ID** (displayed near the bucket name) and save it in `.env.local` as `NEXT_PUBLIC_APPWRITE_IMAGES_BUCKET_ID`.
-
----
-
-## 12. Configure OAuth with Google
-
-1. Go to the **Auth** tab in Appwrite > **Settings**.
-2. Enable **Google** and copy the provided **Redirect URI**.
-3. Visit the [Google Cloud Console](https://console.cloud.google.com):
-   - **Create a new project** and configure the **OAuth consent screen** with default settings.
-4. Create **OAuth 2.0 credentials**:
-   - Add the copied **Redirect URI** from Appwrite as the **Authorized Redirect URI**.
-5. After creation, copy the generated **Client ID** and **Client Secret**.
-6. Return to Appwrite and paste the **Client ID** and **Client Secret** into the corresponding fields for **App ID** and **App Secret**, then click **Update**.
-
----
-
-## 13. Configure OAuth with GitHub
-
-1. Go to the **Auth** tab in Appwrite > **Settings**.
-2. Enable **GitHub** and copy the provided **Redirect URI**.
-3. Visit the [GitHub Developer Settings](https://github.com/settings/developers):
-   - Under **OAuth Apps**, click **New OAuth App**.
-4. Fill out the required fields:
-   - **Application Name**: `Jira Clone` (or any preferred name).
-   - **Homepage URL**: `http://localhost:3000` (or your app's base URL).
-   - **Authorization Callback URL**: Paste the **Redirect URI** copied from Appwrite.
-5. Click **Register Application**.
-6. After registration, you'll receive a **Client ID** and **Client Secret**.
-7. Return to Appwrite and paste the **Client ID** and **Client Secret** into the corresponding fields for **App ID** and **App Secret**, then click **Update**.
-
----
-
-14. Install Project Dependencies using `npm install --legacy-peer-deps` or `yarn install --legacy-peer-deps` or `bun install --legacy-peer-deps`.
-
-15. Now app is fully configured 👍 and you can start using this app using either one of `npm run dev` or `yarn dev` or `bun dev`.
+# PostgreSQL
+DB_TYPE=postgresql DB_HOST=localhost DB_USER=postgres DB_PASSWORD=xxx DB_NAME=jira_clone npm run db:reset
+```
 
 **NOTE:** Please make sure to keep your API keys and configuration values secure and do not expose them publicly.
 
@@ -313,7 +232,25 @@ For each collection:
 
 ## :gear: Tech Stack
 
-[![React JS](https://skillicons.dev/icons?i=react 'React JS')](https://react.dev/ 'React JS') [![Next JS](https://skillicons.dev/icons?i=next 'Next JS')](https://nextjs.org/ 'Next JS') [![Typescript](https://skillicons.dev/icons?i=ts 'Typescript')](https://www.typescriptlang.org/ 'Typescript') [![Appwrite](https://skillicons.dev/icons?i=appwrite 'Appwrite')](https://www.appwrite.io/ 'Appwrite') [![Tailwind CSS](https://skillicons.dev/icons?i=tailwind 'Tailwind CSS')](https://tailwindcss.com/ 'Tailwind CSS') [![Vercel](https://skillicons.dev/icons?i=vercel 'Vercel')](https://vercel.app/ 'Vercel')
+| Category | Technology |
+|----------|------------|
+| Framework | Next.js 14 (App Router) |
+| Language | TypeScript |
+| Backend API | Hono |
+| Database | **Drizzle ORM** + SQLite/MySQL/PostgreSQL (configurable) |
+| Auth | Cookie-based sessions + bcrypt |
+| State | TanStack Query v5 + nuqs |
+| UI | Tailwind CSS + shadcn/ui-style + Radix primitives |
+
+### Key Features
+
+- ✅ **Multi-database support**: SQLite, MySQL, PostgreSQL
+- ✅ **Workspace management**: Create and switch between workspaces
+- ✅ **Project & Task management**: Kanban board with drag-and-drop
+- ✅ **Calendar view**: Task visualization with react-big-calendar
+- ✅ **Member roles**: Admin and Member roles per workspace
+- ✅ **Invite system**: Share workspaces with invite codes
+- ✅ **Modern UI**: Responsive design with dark mode support
 
 ## :wrench: Stats
 

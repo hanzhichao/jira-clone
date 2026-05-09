@@ -1,7 +1,7 @@
-import Database from "better-sqlite3";
-import { drizzle } from "drizzle-orm/better-sqlite3";
+import { createDb } from "./adapter";
 
-import * as schema from "./schema";
+const { db, schema, execute } = createDb();
 
-const sqlite = new Database("sqlite.db");
-export const db = drizzle(sqlite, { schema });
+const schemaAny = schema as typeof import("./schema-sqlite");
+export const { users, sessions, workspaces, members, projects, tasks } = schemaAny;
+export { db, execute };

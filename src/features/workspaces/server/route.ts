@@ -9,8 +9,7 @@ import { getMember } from '@/features/members/utils';
 import { createWorkspaceSchema, updateWorkspaceSchema } from '@/features/workspaces/schema';
 import { sessionMiddleware } from '@/lib/session-middleware';
 import { generateInviteCode } from '@/lib/utils';
-import { db } from '@/db';
-import { workspaces, members, projects, tasks } from '@/db/schema';
+import { db, workspaces, members, projects, tasks } from '@/db';
 import { TaskStatus } from '@/features/tasks/types';
 
 const app = new Hono()

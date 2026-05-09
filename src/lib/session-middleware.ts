@@ -4,8 +4,7 @@ import { eq } from 'drizzle-orm';
 import 'server-only';
 
 import { AUTH_COOKIE } from '@/features/auth/constants';
-import { db } from '@/db';
-import { users, sessions } from '@/db/schema';
+import { db, users, sessions } from '@/db';
 
 type AdditionalContext = {
   Variables: {

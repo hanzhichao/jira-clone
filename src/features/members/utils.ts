@@ -1,7 +1,6 @@
 import { and, eq } from 'drizzle-orm';
 
-import { db } from '@/db';
-import { members } from '@/db/schema';
+import { db, members } from '@/db';
 
 interface GetMemberProps {
   workspaceId: string;

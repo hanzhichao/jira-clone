@@ -2,8 +2,7 @@ import { cookies } from 'next/headers';
 import { desc, eq, inArray } from 'drizzle-orm';
 
 import { AUTH_COOKIE } from '@/features/auth/constants';
-import { db } from '@/db';
-import { members, sessions, users, workspaces } from '@/db/schema';
+import { db, members, sessions, users, workspaces } from '@/db';
 
 export const getWorkspaces = async () => {
   try {

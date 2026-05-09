@@ -7,8 +7,7 @@ import { eq, and, desc, gte, lte, ne, lt } from 'drizzle-orm';
 import { getMember } from '@/features/members/utils';
 import { createProjectSchema, updateProjectSchema } from '@/features/projects/schema';
 import { sessionMiddleware } from '@/lib/session-middleware';
-import { db } from '@/db';
-import { projects, tasks } from '@/db/schema';
+import { db, projects, tasks } from '@/db';
 import { TaskStatus } from '@/features/tasks/types';
 
 const app = new Hono()

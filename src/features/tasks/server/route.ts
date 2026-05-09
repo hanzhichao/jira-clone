@@ -7,8 +7,7 @@ import { getMember } from '@/features/members/utils';
 import { createTaskSchema } from '@/features/tasks/schema';
 import { type Task, TaskStatus } from '@/features/tasks/types';
 import { sessionMiddleware } from '@/lib/session-middleware';
-import { db } from '@/db';
-import { tasks, projects, members, users } from '@/db/schema';
+import { db, tasks, projects, members, users } from '@/db';
 
 const app = new Hono()
   .get(

@@ -8,8 +8,7 @@ import bcrypt from 'bcryptjs';
 import { AUTH_COOKIE } from '@/features/auth/constants';
 import { signInFormSchema, signUpFormSchema } from '@/features/auth/schema';
 import { sessionMiddleware } from '@/lib/session-middleware';
-import { db } from '@/db';
-import { users, sessions } from '@/db/schema';
+import { db, users, sessions } from '@/db';
 
 const app = new Hono()
   .get('/current', sessionMiddleware, (ctx) => {

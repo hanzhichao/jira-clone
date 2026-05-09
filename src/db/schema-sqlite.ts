@@ -24,7 +24,7 @@ export const members = sqliteTable("members", {
   id: text("id").primaryKey(),
   userId: text("user_id").notNull().references(() => users.id),
   workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
-  role: text("role").notNull(),
+  role: text("role").notNull(), // ADMIN, MEMBER
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").default(sql`CURRENT_TIMESTAMP`),
 });
@@ -41,7 +41,7 @@ export const projects = sqliteTable("projects", {
 export const tasks = sqliteTable("tasks", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  status: text("status").notNull(),
+  status: text("status").notNull(), // BACKLOG, TODO, IN_PROGRESS, IN_REVIEW, DONE
   workspaceId: text("workspace_id").notNull().references(() => workspaces.id),
   projectId: text("project_id").references(() => projects.id),
   assigneeId: text("assignee_id").references(() => members.id),
@@ -53,7 +53,7 @@ export const tasks = sqliteTable("tasks", {
 });
 
 export const sessions = sqliteTable("sessions", {
-  id: text("id").primaryKey(),
+  id: text("id").primaryKey(), // The session secret/ID stored in cookie
   userId: text("user_id").notNull().references(() => users.id),
   expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   createdAt: text("created_at").default(sql`CURRENT_TIMESTAMP`),
