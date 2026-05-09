@@ -69,6 +69,7 @@ jira-clone/
       |--- analytics.tsx
       |--- date-picker.tsx
       |--- dotted-separator.tsx
+      |--- language-switcher.tsx
       |--- logo.tsx
       |--- mobile-sidebar.tsx
       |--- modal-provider.tsx
@@ -85,6 +86,15 @@ jira-clone/
     |-- config/
       |--- db.ts
       |--- index.ts
+    |-- db/
+      |--- adapter.ts
+      |--- index.ts
+      |--- migrate.ts
+      |--- schema-mysql.ts
+      |--- schema-postgres.ts
+      |--- schema-sqlite.ts
+      |--- schema.ts
+      |--- seed.ts
     |-- features/
       |--- auth/
       |--- members/
@@ -94,12 +104,16 @@ jira-clone/
     |-- hooks/
       |--- use-confirm.tsx
       |--- use-debounce.ts
+    |-- i18n/
+      |--- locales/
+      |--- index.tsx
     |-- lib/
       |--- appwrite.ts
       |--- hono.ts
       |--- oauth.ts
       |--- session-middleware.ts
       |--- utils.ts
+  |- .env
   |- .env.example
   |- .env/.env.local
   |- .eslintrc.json
@@ -108,8 +122,10 @@ jira-clone/
   |- .prettierrc.mjs
   |- bun.lockb
   |- components.json
+  |- drizzle.config.ts
   |- environment.d.ts
   |- next.config.mjs
+  |- package-lock.json
   |- package.json
   |- postcss.config.mjs
   |- tailwind.config.ts
@@ -285,25 +301,34 @@ Useful resources and dependencies that are used in Jira Clone.
 - [@tanstack/react-query](https://www.npmjs.com/package/@tanstack/react-query): ^5.59.16
 - [@tanstack/react-table](https://www.npmjs.com/package/@tanstack/react-table): ^8.20.5
 - [@trivago/prettier-plugin-sort-imports](https://www.npmjs.com/package/@trivago/prettier-plugin-sort-imports): ^6.0.0
+- [@types/bcryptjs](https://www.npmjs.com/package/@types/bcryptjs): ^3.0.0
+- [@types/better-sqlite3](https://www.npmjs.com/package/@types/better-sqlite3): ^7.6.13
 - [@types/node](https://www.npmjs.com/package/@types/node): ^25
+- [@types/pg](https://www.npmjs.com/package/@types/pg): ^8.11.6
 - [@types/react](https://www.npmjs.com/package/@types/react): ^18
 - [@types/react-big-calendar](https://www.npmjs.com/package/@types/react-big-calendar): ^1.15.0
 - [@types/react-dom](https://www.npmjs.com/package/@types/react-dom): ^18
 - [@vercel/config](https://www.npmjs.com/package/@vercel/config): ^0.3.0
+- [bcryptjs](https://www.npmjs.com/package/bcryptjs): ^3.0.3
+- [better-sqlite3](https://www.npmjs.com/package/better-sqlite3): ^12.9.0
 - [class-variance-authority](https://www.npmjs.com/package/class-variance-authority): ^0.7.0
 - [clsx](https://www.npmjs.com/package/clsx): ^2.1.1
 - [date-fns](https://www.npmjs.com/package/date-fns): ^4.1.0
+- [drizzle-orm](https://www.npmjs.com/package/drizzle-orm): ^0.45.2
 - [eslint](https://www.npmjs.com/package/eslint): ^10
 - [eslint-config-next](https://www.npmjs.com/package/eslint-config-next): 16.2.4
 - [eslint-config-prettier](https://www.npmjs.com/package/eslint-config-prettier): ^10.0.1
 - [eslint-plugin-prettier](https://www.npmjs.com/package/eslint-plugin-prettier): ^5.2.1
 - [hono](https://www.npmjs.com/package/hono): ^4.6.7
 - [lucide-react](https://www.npmjs.com/package/lucide-react): ^1.7.0
+- [mysql2](https://www.npmjs.com/package/mysql2): ^3.11.0
 - [next](https://www.npmjs.com/package/next): 14.2.35
 - [next-themes](https://www.npmjs.com/package/next-themes): ^0.4.3
 - [node-appwrite](https://www.npmjs.com/package/node-appwrite): ^17.0.0
 - [nuqs](https://www.npmjs.com/package/nuqs): 1.19.1
+- [pg](https://www.npmjs.com/package/pg): ^8.12.0
 - [postcss](https://www.npmjs.com/package/postcss): ^8
+- [postgres](https://www.npmjs.com/package/postgres): ^3.4.9
 - [prettier](https://www.npmjs.com/package/prettier): ^3.3.3
 - [prettier-plugin-tailwindcss](https://www.npmjs.com/package/prettier-plugin-tailwindcss): ^0.8.0
 - [react](https://www.npmjs.com/package/react): ^18
@@ -318,6 +343,7 @@ Useful resources and dependencies that are used in Jira Clone.
 - [tailwind-merge](https://www.npmjs.com/package/tailwind-merge): ^3.0.1
 - [tailwindcss](https://www.npmjs.com/package/tailwindcss): ^3.4.1
 - [tailwindcss-animate](https://www.npmjs.com/package/tailwindcss-animate): ^1.0.7
+- [tsx](https://www.npmjs.com/package/tsx): ^4.21.0
 - [typescript](https://www.npmjs.com/package/typescript): ^6
 - [vaul](https://www.npmjs.com/package/vaul): ^1.1.0
 - [zod](https://www.npmjs.com/package/zod): ^3.23.8
